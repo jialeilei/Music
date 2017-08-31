@@ -3,31 +3,32 @@ package com.lei.musicplayer;
 /**
  * Created by lei on 2017/8/3.
  */
-public class AppConstant {
+public interface AppConstant {
 
-    //音乐目前的状态
-    public static String ACTION_STATE = "action_state";
-    public static String ACTION_DURATION = "action_duration";
-    //progress
-    public static String ACTION_PROGRESS = "action_progress";
+    //short time
+    int MUSIC_DURATION = 10000;// 10 seconds
 
-    public static class PlayerState {
-        public static int STATE_PLAY = 0;//暂停、播放
-        public static int STATE_PAUSE = 1;
-        public static int STATE_STOP = 2;
-    }
-
-    public static class PlayerType{
-        public static int CIRCLE_ALL = 6;
-        public static int CIRCLE_SINGLE = 7;
-        public static int CIRCLE_DEFAULT = 8;
-    }
-
-    public static class PlayerMsg{
-        public static String MSG_PROGRESS = "msg_progress";
-    }
+    //action
+    String ACTION_STATE = "action_state";
+    String ACTION_DURATION = "action_duration";
+    String ACTION_PROGRESS = "action_progress";
+    String ACTION_PLAY_STOP = "action_play_stop"; //暂停、播放
+    //public static int ACTION__PAUSE = 1;
+    //public static int ACTION__STOP = 2;
+    String ACTION__NEXT = "action_next";
+    String ACTION__PREVIOUS = "action_previous";
 
 
+    int CIRCLE_ALL = 6;
+    int CIRCLE_SINGLE = 7;
+    //state
+    String STATE_PAUSE = "state_pause";
+    String STATE_PLAYING = "state_playing";
+
+
+    //value
+    String MSG_PROGRESS = "msg_progress";
+    String MSG_STATE = "state";
 
 
 }

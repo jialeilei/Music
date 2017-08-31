@@ -5,86 +5,120 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.provider.MediaStore;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
+import com.google.gson.Gson;
 import com.lei.musicplayer.AppConstant;
-import com.lei.musicplayer.adapter.ListViewAdapter;
-import com.lei.musicplayer.bean.Mp3Info;
 import com.lei.musicplayer.R;
+import com.lei.musicplayer.adapter.FragmentAdapter;
+import com.lei.musicplayer.application.AppCache;
+import com.lei.musicplayer.bean.Mp3Info;
+import com.lei.musicplayer.fragment.LocalFragment;
+import com.lei.musicplayer.fragment.OnlineFragment;
 import com.lei.musicplayer.service.PlayerService;
+import com.lei.musicplayer.service.PlayerServiceListener;
+import com.lei.musicplayer.util.LogTool;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener{
+
+public class MainActivity extends BaseActivity
+        implements NavigationView.OnNavigationItemSelectedListener ,ViewPager.OnPageChangeListener,
+        SeekBar.OnSeekBarChangeListener,View.OnClickListener,PlayerServiceListener{
 
     private static final String TAG = "MainActivity";
-    ListView mListView;
-    ListViewAdapter mAdapter;
-    List<Mp3Info> listMp3;
-    private int play_position = 0;
+    DrawerLayout drawer;
+    NavigationView navigationView;
+    ActionBarDrawerToggle toggle;
     private int play_progress = 0;
-    private boolean isStop = false;
-    //view
-    ImageButton img_previous, img_next, img_play;
-    TextView tvMusicName,tvMusicAuthor,tvMusicDuration;
-    ProgressBar mProgressBarCurrent;
-    SeekBar mSeekBarCurrent;
 
+    //view
+    ImageButton img_next, img_play, img_category;
+    TextView tvMusicName,tvMusicAuthor,tvMusicDuration;
+    SeekBar mSeekBarCurrent;
+    Gson gson = new Gson();
+    String TOP_RANK_URL = "http://music.baidu.com/top/dayhot/?pst=shouyeTop";
+    String BASE_URL = "http://music.baidu.com/";
+    String DOWNLOAD_URL = "data/music/links?songIds=276867440";//songIds=276867440
+
+    ViewPager viewPager;
+    TextView tvLocal,tvOnline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
+
+        getPlayService().setOnPlayerListener(this);
         initView();
+        setListener();
+        setReceiver();
+        //setAnimation();
+    }
+
+    private void setAnimation() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
     }
 
     private void initView() {
-        listMp3 = getMp3Infos();
-        mListView = (ListView) findViewById(R.id.lvMusic);
-        mAdapter = new ListViewAdapter(this,listMp3,R.layout.music_list_item);
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(new MusicListItemClickListener());
 
-        img_previous = (ImageButton) findViewById(R.id.img_previous);
-        img_previous.setOnClickListener(this);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        tvLocal = (TextView) findViewById(R.id.tv_local);
+        tvOnline = (TextView) findViewById(R.id.tv_online);
+        changeTitleColor(0);
+
+        viewPager = (ViewPager) findViewById(R.id.main_view_pager);
+        LocalFragment localFragment = new LocalFragment();
+        OnlineFragment onlineFragment = new OnlineFragment();
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
+        fragmentAdapter.addFragment(localFragment);
+        fragmentAdapter.addFragment(onlineFragment);
+        viewPager.setAdapter(fragmentAdapter);
+        viewPager.setCurrentItem(0);
+        img_category = (ImageButton) findViewById(R.id.img_category);
+        img_category.setOnClickListener(this);
+
+        //bottom play
         img_play = (ImageButton) findViewById(R.id.img_play);
-        img_play.setOnClickListener(this);
         img_next = (ImageButton) findViewById(R.id.img_next);
-        img_next.setOnClickListener(this);
         tvMusicName = (TextView) findViewById(R.id.tv_music_name);
         tvMusicAuthor = (TextView) findViewById(R.id.tv_music_author);
         tvMusicDuration = (TextView) findViewById(R.id.tv_music_duration);
-        mProgressBarCurrent = (ProgressBar) findViewById(R.id.progress_bar_current);
         mSeekBarCurrent = (SeekBar) findViewById(R.id.seek_bar_current);
-        mSeekBarCurrent.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                play_progress = progress * (int) listMp3.get(play_position).getDuration() /100;
-            }
+    }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+    private void setListener() {
+        viewPager.setOnPageChangeListener(this);
+        tvLocal.setOnClickListener(this);
+        tvOnline.setOnClickListener(this);
+        img_play.setOnClickListener(this);
+        img_next.setOnClickListener(this);
+        mSeekBarCurrent.setOnSeekBarChangeListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
 
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-                sendPlayInfo(AppConstant.PlayerState.STATE_PLAY);
-                // int progress = play_progress * 100 / (int) listMp3.get(play_position).getDuration()
-
-            }
-        });
-
+    private void setReceiver() {
         mainReceiver = new MainReceiver();
         // 创建IntentFilter
         IntentFilter filter = new IntentFilter();
@@ -95,133 +129,195 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         registerReceiver(mainReceiver, filter);
     }
 
+
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        //LogTool.i(TAG,"onPageScrolled: " + position);
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        LogTool.i(TAG, "onPageSelected: " + position);
+        changeTitleColor(position);
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        play_progress = progress * (int) AppCache.getPlayingMp3Info().getDuration() / 100;
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        sendPlayInfo(AppConstant.ACTION_PLAY_STOP);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    private void changeTitleColor(int position) {
+        if (position == 0){
+            tvLocal.setTextColor(getResources().getColor(R.color.white));
+            tvOnline.setTextColor(getResources().getColor(R.color.gray_d));
+
+        }else {
+            tvOnline.setTextColor(getResources().getColor(R.color.white));
+            tvLocal.setTextColor(getResources().getColor(R.color.gray_d));
+        }
+
+    }
+
     private MainReceiver mainReceiver;
 
-
-    public class MainReceiver extends BroadcastReceiver{
+    public class MainReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(AppConstant.ACTION_STATE)){
-
-                setMusicInfo();
-                int state = intent.getIntExtra("state",0);
-                if (state == AppConstant.PlayerState.STATE_PLAY){
-                    img_play.setImageResource(R.mipmap.player_playing);
-                    isStop = false;
-                }else {
-                    img_play.setImageResource(R.mipmap.player_stop);
-                    play_progress = intent.getIntExtra(AppConstant.PlayerMsg.MSG_PROGRESS,0);
-                    isStop = true;
-                }
-            }else if (action.equals(AppConstant.ACTION_PROGRESS)){
-
-                play_progress = intent.getIntExtra(AppConstant.PlayerMsg.MSG_PROGRESS,0);
-                int progress = play_progress * 100 / (int) listMp3.get(play_position).getDuration();
-                mProgressBarCurrent.setProgress(progress);
-                mSeekBarCurrent.setProgress(progress);
-                Log.i(TAG,"progress " + progress +
-                        " duration: "+ ((int) listMp3.get(play_position).getDuration())
-                        +" play_progress: "+play_progress);
+            switch (intent.getAction()){
+                case AppConstant.ACTION_STATE:
+                    setMusicInfo();
+                    String state = intent.getStringExtra(AppConstant.MSG_STATE);
+                    if (state.equals(AppConstant.STATE_PLAYING)){
+                        img_play.setImageResource(R.mipmap.player_playing);
+                    }else {
+                        img_play.setImageResource(R.mipmap.player_stop);
+                    }
+                    break;
+                case AppConstant.ACTION_PROGRESS:
+                    play_progress = intent.getIntExtra(AppConstant.MSG_PROGRESS,0);
+                    int progress = play_progress * 100 / (int) AppCache.getPlayingMp3Info().getDuration();
+                    mSeekBarCurrent.setProgress(progress);
+//                    Log.i(TAG, "progress " + progress +
+//                            " duration: " + ((int) listMp3.get(play_position).getDuration())
+//                            + " play_progress: " + play_progress);
+                    break;
             }
-
         }
     }
 
-    private class MusicListItemClickListener implements AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            play_position = position;
-            play_progress = 0;
-            sendPlayInfo(AppConstant.PlayerState.STATE_PLAY);
-        }
-    }
-    /*
-    * 启动服务播放音乐
-    * */
-    private void sendPlayInfo(int msg){
-        if (listMp3 != null ){
-            Mp3Info info = listMp3.get(play_position);
-            Intent intent = new Intent();
-            intent.putExtra("url",info.getUrl());
-            intent.putExtra("MSG", msg);
-            intent.putExtra(AppConstant.PlayerMsg.MSG_PROGRESS, play_progress);
-            intent.setClass(MainActivity.this, PlayerService.class);
-            startService(intent);
-        }
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.img_next:
-                if (listMp3.size() - 1  > play_position){
-                    play_position ++;
-                }else if (listMp3.size() - 1  == play_position){
-                    play_position = 0;
-                }
-                play_progress = 0;
-                sendPlayInfo(AppConstant.PlayerState.STATE_PLAY);
-
+                sendPlayInfo(AppConstant.ACTION__NEXT);
+                getPlayService().playNext();
                 break;
             case R.id.img_play:
-
-                Log.i(TAG,"stop: " + isStop);
-                if (isStop){
-                    sendPlayInfo(AppConstant.PlayerState.STATE_PLAY);
-                }else {
-                    sendPlayInfo(AppConstant.PlayerState.STATE_STOP);
-                }
+                sendPlayInfo(AppConstant.ACTION_PLAY_STOP);
                 break;
-            case R.id.img_previous:
-                if (play_position > 0){
-                    play_position --;
-                }else{
-                    play_position = listMp3.size() - 1;
-                }
-                play_progress = 0;
-                sendPlayInfo(AppConstant.PlayerState.STATE_PLAY);
+            case R.id.tv_local:
+                viewPager.setCurrentItem(0);
+                changeTitleColor(0);
+                break;
+            case R.id.tv_online:
+                viewPager.setCurrentItem(1);
+                changeTitleColor(1);
+                break;
+            case R.id.img_category:
+                drawer.openDrawer(GravityCompat.START);
                 break;
             default:
                 break;
         }
     }
 
+
     private void setMusicInfo(){
-        tvMusicName.setText(listMp3.get(play_position).getTitle());
-        tvMusicAuthor.setText(listMp3.get(play_position).getArtist());
+        tvMusicName.setText(AppCache.getPlayingMp3Info().getTitle());
+        tvMusicAuthor.setText(AppCache.getPlayingMp3Info().getArtist());
     }
 
-    public List<Mp3Info> getMp3Infos(){
+    /*
+    * 启动服务播放音乐
+    * */
+    private void sendPlayInfo(String action){
+        if (AppCache.getLocalMusicList() != null ){
+            //Mp3Info info = listMp3.get(play_position);
+            Intent intent = new Intent();
+            intent.setAction(action);
+            intent.putExtra(AppConstant.MSG_PROGRESS, play_progress);
+            intent.setClass(MainActivity.this, PlayerService.class);
+            startService(intent);
+        }
+    }
 
-        List<Mp3Info> infos = new ArrayList<Mp3Info>();
-        Cursor cursor = getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,
-                MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+    @Override
+    public void onPlayerServiceProgress(int progress) {
 
-        for (int i = 0; i < cursor.getCount(); i++) {
-            Mp3Info info = new Mp3Info();
-            cursor.moveToNext();
-            long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
-            String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-            String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-            long duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-            long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
-            //the path of the music
-            String url = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+    }
 
-            int isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.IS_MUSIC));
-            if (isMusic != 0){
-                info.setId(id);
-                info.setTitle(title);
-                info.setArtist(artist);
-                info.setDuration(duration);
-                info.setSize(size);
-                info.setUrl(url);
-                infos.add(info);
-            }
+    @Override
+    public void onPlayerServiceStop() {
+
+    }
+
+    @Override
+    public void onPlayerServicePlay() {
+
+    }
+
+    //view
+    @Override
+    public void onBackPressed() {
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main2, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
 
         }
-        return infos;
+
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

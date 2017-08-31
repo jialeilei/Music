@@ -1,11 +1,23 @@
 package com.lei.musicplayer.util;
 
+import android.app.Application;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 
 import com.lei.musicplayer.bean.Mp3Info;
+import com.lei.musicplayer.bean.SongLinkResponse;
+import com.lei.musicplayer.bean.SongList;
+import com.lei.musicplayer.http.HttpHelper;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -39,4 +51,95 @@ public class Util {
         }
         return min + ":" + sec.trim().substring(0, 2);
     }
+
+
+    public static int getStatusBarHeight(Context context) {
+        Class<?> c = null;
+
+        Object obj = null;
+
+        Field field = null;
+
+        int x = 0, sbar = 0;
+
+        try {
+
+            c = Class.forName("com.android.internal.R$dimen");
+
+            obj = c.newInstance();
+
+            field = c.getField("status_bar_height");
+
+            x = Integer.parseInt(field.get(obj).toString());
+
+            sbar = context.getResources().getDimensionPixelSize(x);
+
+        } catch (Exception e1) {
+
+            e1.printStackTrace();
+
+        }
+
+        return sbar;
+    }
+
+//
+//    private void getHotRank() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Document doc = null;
+//                LogTool.i(TAG,"start to get doc "+ SystemClock.currentThreadTimeMillis());
+//                try {
+//                    doc = Jsoup.connect(TOP_RANK_URL).get();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                LogTool.i(TAG,"get doc finished "+SystemClock.currentThreadTimeMillis());
+//                Elements elements = doc.getElementsByClass("normal-song-list");
+//                Elements lead_top = doc.getElementsByClass("song-item-hook");
+//                String str="";
+//
+//                for (Element element : elements) {
+//                    LogTool.i(TAG,element.text()+"");
+//                }
+//                LogTool.i(TAG," item size: " + lead_top.size());
+//                for (Element element : lead_top) {
+//                    SongList mSongList = new SongList();
+//                    mSongList = gson.fromJson(element.attr("data-songitem"),
+//                            SongList.class);
+//                    songLists.add(mSongList);
+//                    LogTool.i(TAG," item:"+element.attr("data-songitem")
+//                                    +" title: "+element.getElementsByClass("song-title").attr("title")
+//                    );
+//                }
+//                LogTool.i(TAG, "SongList.size: " + songLists.size());
+//                for (SongList songList : songLists) {
+//                    LogTool.i(TAG,songList.getSongItem().getSname()+" id:"+songList.getSongItem().getSid());
+//                }
+//
+//            }
+//        }).start();
+//    }
+//
+//    private void getDownloadLink() {
+//        HttpHelper helper = retrofit.create(HttpHelper.class);
+//        helper.getSongData(276867440).enqueue(new retrofit2.Callback<SongLinkResponse>() {
+//            @Override
+//            public void onResponse(retrofit2.Call<SongLinkResponse> call, retrofit2.Response<SongLinkResponse> response) {
+//
+//                if (response.isSuccessful()){
+//                    LogTool.i(TAG,response.body().getData().getSongList().toString());
+//                }else {
+//                    LogTool.i(TAG,"onResponse fail");
+//                }
+//            }
+//
+//
+//            @Override
+//            public void onFailure(retrofit2.Call<SongLinkResponse> call, Throwable t) {
+//                LogTool.i(TAG,"onFail");
+//            }
+//        });
+//    }
 }

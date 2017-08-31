@@ -11,9 +11,9 @@ import java.util.List;
 /**
  * Created by lei on 2017/8/3.
  */
-public class ListViewAdapter extends CommonAdapter<Mp3Info> {
+public class LocalMusicListViewAdapter extends CommonAdapter<Mp3Info> {
 
-    public ListViewAdapter(Context context, List<Mp3Info> data, int mItemLayout) {
+    public LocalMusicListViewAdapter(Context context, List<Mp3Info> data, int mItemLayout) {
         super(context, data, mItemLayout);
     }
 
