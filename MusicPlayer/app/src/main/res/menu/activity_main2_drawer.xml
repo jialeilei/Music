@@ -11,7 +11,7 @@
             android:title="Gallery" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@mipmap/player_next"
+            android:icon="@mipmap/default_stop"
             android:title="Slideshow" />
         <item
             android:id="@+id/nav_manage"

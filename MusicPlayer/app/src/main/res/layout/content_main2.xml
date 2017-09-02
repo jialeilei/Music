@@ -20,11 +20,11 @@
         android:visibility="visible">
         <ImageView
             android:id="@+id/img_music_bottom"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
-            android:src="@mipmap/ic_launcher"/>
+            android:src="@mipmap/default_music"/>
         <TextView
             android:id="@+id/tv_music_name"
             android:layout_width="wrap_content"
@@ -32,9 +32,10 @@
             android:layout_toRightOf="@+id/img_music_bottom"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
+            android:paddingBottom="5dp"
             android:background="@color/white"
             android:text="Music name"
-            android:textSize="16dp"
+            android:textSize="14dp"
             android:textColor="@color/colorText"/>
         <TextView
             android:id="@+id/tv_music_author"
@@ -45,7 +46,7 @@
             android:layout_marginLeft="5dp"
             android:background="@color/white"
             android:text="author"
-            android:textSize="14dp"
+            android:textSize="12dp"
             android:textColor="@color/colorText"/>
         <TextView
             android:id="@+id/tv_music_duration"
@@ -55,8 +56,8 @@
             android:layout_toRightOf="@+id/tv_music_author"
             android:layout_marginLeft="10dp"
             android:background="@color/white"
-            android:text="duration"
-            android:textSize="14dp"
+            android:text="00:00"
+            android:textSize="12dp"
             android:textColor="@color/colorText"/>
 
         <RelativeLayout
@@ -65,19 +66,13 @@
             android:layout_height="40dp"
             android:layout_marginTop="6dp"
             android:layout_alignParentRight="true">
-            <!--<ImageButton-->
-                <!--android:id="@+id/img_previous"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_alignParentLeft="true"-->
-                <!--android:src="@mipmap/player_previous"/>-->
 
             <ImageButton
                 android:id="@+id/img_play"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@color/white"
-                android:src="@mipmap/player_stop"/>
+                android:src="@mipmap/default_stop"/>
 
             <ImageButton
                 android:id="@+id/img_next"
@@ -86,7 +81,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
                 android:background="@color/white"
-                android:src="@mipmap/player_next"/>
+                android:src="@mipmap/default_next"/>
 
         </RelativeLayout>
 

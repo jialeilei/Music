@@ -12,9 +12,9 @@
         android:visibility="visible">
         <ImageButton
             android:id="@+id/img_category"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="12dp"
             android:layout_marginLeft="10dp"
             android:background="@mipmap/category_white"/>
         <LinearLayout
@@ -30,7 +30,7 @@
                 android:layout_marginRight="10dp"
                 android:textColor="@color/white"
                 android:gravity="center"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:text="本地音乐"/>
 
             <TextView
@@ -39,7 +39,7 @@
                 android:layout_height="40dp"
                 android:textColor="@color/white"
                 android:gravity="center"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:text="在线音乐"/>
 
         </LinearLayout>
@@ -47,9 +47,9 @@
 
         <ImageButton
             android:id="@+id/img_btn_search"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="12dp"
             android:layout_marginRight="10dp"
             android:layout_alignParentRight="true"
             android:background="@mipmap/search_white"/>

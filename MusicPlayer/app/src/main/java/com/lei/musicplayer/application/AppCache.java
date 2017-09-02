@@ -72,5 +72,11 @@ public class AppCache {
         return getInstance().localMusicList.get(mMusicPlayPosition);
     }
 
+    /*
+    * 清理 activity
+    * */
+    public static void clearStack() {
+
+    }
 
 }

@@ -9,7 +9,12 @@ public class Mp3Info {
     String artist;
     long duration;
     long size;
+    //local url of music
     String url;
+    String album;
+    String albumKey;
+    //image of album
+    String albumArt="";
 
     public long getId() {
         return id;
@@ -57,5 +62,29 @@ public class Mp3Info {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+//    public String getAlbum() {
+//        return album;
+//    }
+//
+//    public void setAlbum(String album) {
+//        this.album = album;
+//    }
+
+    public String getAlbumKey() {
+        return albumKey;
+    }
+
+    public void setAlbumKey(String albumKey) {
+        this.albumKey = albumKey;
+    }
+
+    public String getAlbumArt() {
+        return albumArt;
+    }
+
+    public void setAlbumArt(String albumArt) {
+        this.albumArt = albumArt;
     }
 }

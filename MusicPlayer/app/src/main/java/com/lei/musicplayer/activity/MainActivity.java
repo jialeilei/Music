@@ -4,21 +4,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.google.gson.Gson;
@@ -26,29 +24,27 @@ import com.lei.musicplayer.AppConstant;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.FragmentAdapter;
 import com.lei.musicplayer.application.AppCache;
-import com.lei.musicplayer.bean.Mp3Info;
 import com.lei.musicplayer.fragment.LocalFragment;
 import com.lei.musicplayer.fragment.OnlineFragment;
 import com.lei.musicplayer.service.PlayerService;
-import com.lei.musicplayer.service.PlayerServiceListener;
+import com.lei.musicplayer.service.OnPlayerServiceListener;
 import com.lei.musicplayer.util.LogTool;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.lei.musicplayer.util.Util;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener ,ViewPager.OnPageChangeListener,
-        SeekBar.OnSeekBarChangeListener,View.OnClickListener,PlayerServiceListener{
+        SeekBar.OnSeekBarChangeListener,View.OnClickListener,OnPlayerServiceListener {
 
     private static final String TAG = "MainActivity";
     DrawerLayout drawer;
     NavigationView navigationView;
     ActionBarDrawerToggle toggle;
     private int play_progress = 0;
-
     //view
+    LocalFragment localFragment;
+    OnlineFragment onlineFragment;
     ImageButton img_next, img_play, img_category;
+    ImageView img_bottom;
     TextView tvMusicName,tvMusicAuthor,tvMusicDuration;
     SeekBar mSeekBarCurrent;
     Gson gson = new Gson();
@@ -67,7 +63,7 @@ public class MainActivity extends BaseActivity
         getPlayService().setOnPlayerListener(this);
         initView();
         setListener();
-        setReceiver();
+        //setReceiver();
         //setAnimation();
     }
 
@@ -89,8 +85,8 @@ public class MainActivity extends BaseActivity
         changeTitleColor(0);
 
         viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        LocalFragment localFragment = new LocalFragment();
-        OnlineFragment onlineFragment = new OnlineFragment();
+        localFragment = new LocalFragment();
+        onlineFragment = new OnlineFragment();
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
         fragmentAdapter.addFragment(localFragment);
         fragmentAdapter.addFragment(onlineFragment);
@@ -102,10 +98,23 @@ public class MainActivity extends BaseActivity
         //bottom play
         img_play = (ImageButton) findViewById(R.id.img_play);
         img_next = (ImageButton) findViewById(R.id.img_next);
+        img_bottom = (ImageView) findViewById(R.id.img_music_bottom);
         tvMusicName = (TextView) findViewById(R.id.tv_music_name);
         tvMusicAuthor = (TextView) findViewById(R.id.tv_music_author);
         tvMusicDuration = (TextView) findViewById(R.id.tv_music_duration);
         mSeekBarCurrent = (SeekBar) findViewById(R.id.seek_bar_current);
+        setBottomMusicInfo();
+    }
+
+    private void setBottomMusicInfo() {
+        tvMusicName.setText(AppCache.getPlayingMp3Info().getTitle());
+        tvMusicAuthor.setText(AppCache.getPlayingMp3Info().getArtist());
+        if (AppCache.getPlayingMp3Info().getAlbumArt().length() > 0){
+            img_bottom.setImageBitmap(BitmapFactory.decodeFile(AppCache.getPlayingMp3Info().getAlbumArt()));
+        }else {
+            img_bottom.setImageResource(R.mipmap.default_music);
+        }
+
     }
 
     private void setListener() {
@@ -114,6 +123,7 @@ public class MainActivity extends BaseActivity
         tvOnline.setOnClickListener(this);
         img_play.setOnClickListener(this);
         img_next.setOnClickListener(this);
+        img_bottom.setOnClickListener(this);
         mSeekBarCurrent.setOnSeekBarChangeListener(this);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -130,15 +140,13 @@ public class MainActivity extends BaseActivity
     }
 
 
-
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        //LogTool.i(TAG,"onPageScrolled: " + position);
+
     }
 
     @Override
     public void onPageSelected(int position) {
-        LogTool.i(TAG, "onPageSelected: " + position);
         changeTitleColor(position);
     }
 
@@ -154,7 +162,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        sendPlayInfo(AppConstant.ACTION_PLAY_STOP);
+        sendPlayInfo(AppConstant.ACTION_PLAY_STOP,true);
     }
 
     @Override
@@ -181,21 +189,8 @@ public class MainActivity extends BaseActivity
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()){
                 case AppConstant.ACTION_STATE:
-                    setMusicInfo();
-                    String state = intent.getStringExtra(AppConstant.MSG_STATE);
-                    if (state.equals(AppConstant.STATE_PLAYING)){
-                        img_play.setImageResource(R.mipmap.player_playing);
-                    }else {
-                        img_play.setImageResource(R.mipmap.player_stop);
-                    }
                     break;
                 case AppConstant.ACTION_PROGRESS:
-                    play_progress = intent.getIntExtra(AppConstant.MSG_PROGRESS,0);
-                    int progress = play_progress * 100 / (int) AppCache.getPlayingMp3Info().getDuration();
-                    mSeekBarCurrent.setProgress(progress);
-//                    Log.i(TAG, "progress " + progress +
-//                            " duration: " + ((int) listMp3.get(play_position).getDuration())
-//                            + " play_progress: " + play_progress);
                     break;
             }
         }
@@ -206,11 +201,14 @@ public class MainActivity extends BaseActivity
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.img_next:
-                sendPlayInfo(AppConstant.ACTION__NEXT);
-                getPlayService().playNext();
+                sendPlayInfo(AppConstant.ACTION__NEXT, false);
+                //getPlayService().playNext();
                 break;
             case R.id.img_play:
-                sendPlayInfo(AppConstant.ACTION_PLAY_STOP);
+                sendPlayInfo(AppConstant.ACTION_PLAY_STOP,false);
+                break;
+            case R.id.img_music_bottom:
+
                 break;
             case R.id.tv_local:
                 viewPager.setCurrentItem(0);
@@ -228,39 +226,44 @@ public class MainActivity extends BaseActivity
         }
     }
 
-
-    private void setMusicInfo(){
-        tvMusicName.setText(AppCache.getPlayingMp3Info().getTitle());
-        tvMusicAuthor.setText(AppCache.getPlayingMp3Info().getArtist());
-    }
-
     /*
     * 启动服务播放音乐
     * */
-    private void sendPlayInfo(String action){
+    private void sendPlayInfo(String action,boolean usingSeekBar){
         if (AppCache.getLocalMusicList() != null ){
-            //Mp3Info info = listMp3.get(play_position);
             Intent intent = new Intent();
             intent.setAction(action);
-            intent.putExtra(AppConstant.MSG_PROGRESS, play_progress);
+            if (usingSeekBar){
+                intent.putExtra(AppConstant.MSG_PROGRESS, play_progress);
+            }
             intent.setClass(MainActivity.this, PlayerService.class);
             startService(intent);
         }
     }
 
     @Override
-    public void onPlayerServiceProgress(int progress) {
-
+    public void onMusicCurrentPosition(int currentPosition) {
+        play_progress = currentPosition;
+        int progress = play_progress * 100 / (int) AppCache.getPlayingMp3Info().getDuration();
+        mSeekBarCurrent.setProgress(progress);
+        tvMusicDuration.setText("" + Util.formatTime(play_progress));
     }
 
     @Override
-    public void onPlayerServiceStop() {
-
+    public void onMusicStop() {
+        img_play.setImageResource(R.mipmap.default_stop);
     }
 
     @Override
-    public void onPlayerServicePlay() {
+    public void onMusicPlay() {
+        setBottomMusicInfo();
+        img_play.setImageResource(R.mipmap.default_playing);
+        localFragment.refreshMusicList();
+    }
 
+    @Override
+    public void onMusicComplete() {
+        img_play.setImageResource(R.mipmap.default_stop);
     }
 
     //view
@@ -315,7 +318,6 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_send) {
 
         }
-
         //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         //drawer.closeDrawer(GravityCompat.START);
         return true;

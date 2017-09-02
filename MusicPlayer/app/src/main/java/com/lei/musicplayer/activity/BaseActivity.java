@@ -1,5 +1,6 @@
 package com.lei.musicplayer.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,7 +48,9 @@ public class BaseActivity extends AppCompatActivity {
     public PlayerService getPlayService(){
         PlayerService service = AppCache.getPlayService();
         if (service == null){
-            throw new NullPointerException("PlayerService is null");
+
+            startActivity(new Intent(this,SplashActivity.class));
+            AppCache.clearStack();
         }
         return service;
     }

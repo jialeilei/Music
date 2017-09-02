@@ -2,12 +2,15 @@ package com.lei.musicplayer.adapter;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import retrofit2.http.PUT;
 
 /**
  * Created by lei on 2016/9/6.
@@ -91,6 +94,12 @@ public class ViewHolder {
         ImageView imageView = getView(viewId);
         imageView.setImageResource(resId);
 
+        return this;
+    }
+
+    public ViewHolder setImageBitmap(int viewId, Bitmap bp){
+        ImageView img = getView(viewId);
+        img.setImageBitmap(bp);
         return this;
     }
 

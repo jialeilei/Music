@@ -25,7 +25,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void checkService() {
-        if (getPlayService() == null){
+        if (AppCache.getPlayService() == null){
             startPlayService();
             mHandler.postDelayed(new Runnable() {
                 @Override
@@ -47,7 +47,6 @@ public class SplashActivity extends BaseActivity {
 
 
     private void startMainActivity() {
-        LogTool.i(TAG," startMainActivity");
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(intent);
     }
