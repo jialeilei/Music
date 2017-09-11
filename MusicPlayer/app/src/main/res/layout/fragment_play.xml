@@ -1,0 +1,85 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_play">
+
+    <!-- top -->
+    <RelativeLayout
+        android:id="@+id/rl_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+        <ImageView
+            android:id="@+id/img_down"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:src="@mipmap/more_unfold"/>
+        <TextView
+            android:id="@+id/tv_music_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/img_down"
+            android:layout_marginLeft="10dp"
+            android:textSize="16sp"
+            android:text="name"/>
+
+        <TextView
+            android:id="@+id/tv_music_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/img_down"
+            android:layout_below="@+id/tv_music_name"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="12sp"
+            android:text="author"/>
+    </RelativeLayout>
+
+    <com.lei.musicplayer.view.LrcView
+        android:id="@+id/lrc_view"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/rl_top"/>
+
+    <!-- bottom -->
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="15dp"
+        android:layout_alignParentBottom="true">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true">
+            <ImageView
+                android:id="@+id/fg_bottom_prev"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@mipmap/play_fragment_prev"/>
+            <ImageView
+                android:id="@+id/fg_bottom_play"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="5dp"
+                android:src="@mipmap/play_fragment_stop"/>
+            <ImageView
+                android:id="@+id/fg_bottom_next"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="20dp"
+                android:src="@mipmap/play_fragment_next"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

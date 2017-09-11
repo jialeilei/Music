@@ -1,5 +1,7 @@
 package com.lei.musicplayer.bean;
 
+import com.lei.musicplayer.constant.MusicType;
+
 /**
  * Created by lei on 2017/8/2.
  */
@@ -15,6 +17,25 @@ public class Mp3Info {
     String albumKey;
     //image of album
     String albumArt="";
+
+    @MusicType
+    int musicType;
+
+    public int getMusicType() {
+        return musicType;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setMusicType(@MusicType int musicType) {
+        this.musicType = musicType;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
 
     public long getId() {
         return id;

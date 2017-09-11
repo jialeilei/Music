@@ -4,14 +4,20 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import com.lei.musicplayer.AppConstant;
+import android.view.animation.AnimationUtils;
+import com.lei.musicplayer.constant.AppConstant;
+import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
+import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Mp3Info;
+import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.LrcProcess;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +36,23 @@ public class PlayerService extends Service {
     private int mPlayType = AppConstant.CIRCLE_ALL;
     private OnPlayerServiceListener mPlayerServiceListener;
 
+    //歌词
+    LrcProcess lrcProcess = new LrcProcess();
+    List<LrcContent> lrcList = new ArrayList<LrcContent>();
+    int index = 0;//歌词索引值
+
     private Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
-            if (msg.what == 1) {
-                if(mediaPlayer != null) {
-                    play_progress = mediaPlayer.getCurrentPosition(); // 获取当前音乐播放的位置
-                    mPlayerServiceListener.onMusicCurrentPosition(play_progress);
-                    handler.sendEmptyMessageDelayed(1, 1000);
-                }
-
+            switch (msg.what){
+                case 1://更新当前音乐播放位置
+                    if(mediaPlayer != null) {
+                        play_progress = mediaPlayer.getCurrentPosition(); // 获取当前音乐播放的位置
+                        mPlayerServiceListener.onMusicCurrentPosition(play_progress);
+                        handler.sendEmptyMessageDelayed(1, 1000);
+                    }
+                    break;
+                case 2:
+                    break;
             }
         };
     };
@@ -70,7 +84,73 @@ public class PlayerService extends Service {
                     break;
             }
         }
+
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    /*
+    * 初始化歌词类
+    * */
+    private void initLrc(){
+
+        lrcProcess = new LrcProcess();
+        //读取歌词文件
+        lrcProcess.readLRC(Environment.getExternalStorageDirectory()
+                +"/"+mLocalMusicList.get(play_position).getTitle());
+        LogTool.i(TAG,"directory: "+ Environment.getExternalStorageDirectory()
+                +"/"+mLocalMusicList.get(play_position).getTitle()
+                +" uri: " + mLocalMusicList.get(play_position).getUrl());
+        //传回处理后的歌词文件
+        lrcList = lrcProcess.getLrcList();
+        if (lrcList == null || lrcList.size() == 0){return;}
+        LogTool.i(TAG,"lrcList.size: "+lrcList.size());
+        PlayFragment.lrcView.setmLrcList(lrcList);
+        //切换带动画显示歌词
+        PlayFragment.lrcView.setAnimation(AnimationUtils.loadAnimation(PlayerService.this, R.anim.lrc_slide_up));
+        handler.post(mRunnable);
+
+    }
+
+    Runnable mRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            PlayFragment.lrcView.setIndex(lrcIndex());
+            PlayFragment.lrcView.invalidate();
+            handler.postDelayed(mRunnable, 100);
+        }
+    };
+
+    /**
+     * 根据时间获取歌词显示的索引值
+     * @return
+     */
+    public int lrcIndex() {
+        int currentTime = play_position;
+        int duration = mediaPlayer.getDuration();
+
+        if(mediaPlayer.isPlaying()) {
+            currentTime = mediaPlayer.getCurrentPosition();
+            duration = mediaPlayer.getDuration();
+        }
+        if(currentTime < duration) {
+            for (int i = 0; i < lrcList.size(); i++) {
+                if (i < lrcList.size() - 1) {
+                    if (currentTime < lrcList.get(i).getLrcTime() && i == 0) {
+                        index = i;
+                    }
+                    if (currentTime > lrcList.get(i).getLrcTime()
+                            && currentTime < lrcList.get(i + 1).getLrcTime()) {
+                        index = i;
+                    }
+                }
+                if (i == lrcList.size() - 1
+                        && currentTime > lrcList.get(i).getLrcTime()) {
+                    index = i;
+                }
+            }
+        }
+        return index;
     }
 
     private void playOrStop(int getPlayPosition) {
@@ -119,6 +199,7 @@ public class PlayerService extends Service {
             AppCache.setPlayingPosition(play_position);
             mPlayerServiceListener.onMusicPlay();
             handler.sendEmptyMessage(1);
+            initLrc();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -172,11 +253,20 @@ public class PlayerService extends Service {
     }
 
     public void onDestroy(){
+//        mPlayer.reset();
+//        mPlayer.release();
+//        mPlayer = null;
+//        mAudioFocusManager.abandonAudioFocus();
+//        mMediaSessionManager.release();
+//        Notifier.cancelAll();
+//        AppCache.setPlayService(null);
         if (mediaPlayer != null){
-            mediaPlayer.stop();
+            mediaPlayer.reset();
             mediaPlayer.release();
+            mediaPlayer = null;
         }
         AppCache.setPlayService(null);
+        super.onDestroy();
     }
 
 

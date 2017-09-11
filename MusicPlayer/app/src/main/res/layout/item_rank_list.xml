@@ -32,7 +32,7 @@
             android:layout_toLeftOf="@+id/tv_duration"
             android:text="title"
             android:textSize="15sp"
-            android:textColor="@color/colorText"/>
+            android:textColor="@color/gray_5"/>
 
         <TextView
             android:id="@+id/tv_duration"
@@ -42,7 +42,7 @@
             android:layout_marginRight="10dp"
             android:text="duration"
             android:textSize="12sp"
-            android:textColor="@color/colorText"/>
+            android:textColor="@color/gray_5"/>
 
         <TextView
             android:id="@+id/tv_artist"
@@ -55,7 +55,7 @@
             android:layout_toRightOf="@+id/img_music"
             android:text="artist"
             android:textSize="12sp"
-            android:textColor="@color/colorText"/>
+            android:textColor="@color/gray_5"/>
     </RelativeLayout>
 
     <TextView

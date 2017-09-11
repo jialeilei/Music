@@ -48,7 +48,6 @@ public class BaseActivity extends AppCompatActivity {
     public PlayerService getPlayService(){
         PlayerService service = AppCache.getPlayService();
         if (service == null){
-
             startActivity(new Intent(this,SplashActivity.class));
             AppCache.clearStack();
         }

@@ -36,7 +36,7 @@
             android:background="@color/white"
             android:text="Music name"
             android:textSize="14dp"
-            android:textColor="@color/colorText"/>
+            android:textColor="@color/gray_5"/>
         <TextView
             android:id="@+id/tv_music_author"
             android:layout_width="wrap_content"
@@ -47,7 +47,7 @@
             android:background="@color/white"
             android:text="author"
             android:textSize="12dp"
-            android:textColor="@color/colorText"/>
+            android:textColor="@color/gray_5"/>
         <TextView
             android:id="@+id/tv_music_duration"
             android:layout_width="wrap_content"
@@ -58,7 +58,7 @@
             android:background="@color/white"
             android:text="00:00"
             android:textSize="12dp"
-            android:textColor="@color/colorText"/>
+            android:textColor="@color/gray_5"/>
 
         <RelativeLayout
             android:id="@+id/rl_play_control"

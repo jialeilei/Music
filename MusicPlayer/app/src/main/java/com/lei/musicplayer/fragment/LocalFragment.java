@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import com.lei.musicplayer.R;
-import com.lei.musicplayer.adapter.LocalMusicListViewAdapter;
+import com.lei.musicplayer.adapter.LocalListAdapter;
 import com.lei.musicplayer.application.AppCache;
 
 
@@ -17,7 +17,7 @@ import com.lei.musicplayer.application.AppCache;
  */
 public class LocalFragment extends BaseFragment implements AdapterView.OnItemClickListener{
 
-    private LocalMusicListViewAdapter adapter;
+    private LocalListAdapter adapter;
     private ListView mLocalMusicListView;
 
     @Nullable
@@ -29,9 +29,9 @@ public class LocalFragment extends BaseFragment implements AdapterView.OnItemCli
 
     @Override
     protected void initView(View view) {
-        adapter = new LocalMusicListViewAdapter(getActivity(), AppCache.getLocalMusicList(),R.layout.music_list_item);
+        adapter = new LocalListAdapter(getActivity(), AppCache.getLocalMusicList(),R.layout.item_local_list);
         mLocalMusicListView = (ListView) view.findViewById(R.id.lv_local_music);
-        mLocalMusicListView.setPadding(0, AppCache.getSystemStatusHeight() * 2 + 50, 0, 50);
+        mLocalMusicListView.setPadding(0, AppCache.getSystemStatusHeight() * 2 + 45, 0, 50);
         mLocalMusicListView.setAdapter(adapter);
         mLocalMusicListView.setOnItemClickListener(this);
     }

@@ -21,7 +21,7 @@
             android:visibility="gone"
             app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay"/>
 
-        <include layout="@layout/activity_toolbar"></include>
+        <include layout="@layout/toolbar_main_activity"></include>
 
     </android.support.design.widget.AppBarLayout>
     <!-- content -->

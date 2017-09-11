@@ -1,4 +1,4 @@
-package com.lei.musicplayer;
+package com.lei.musicplayer.constant;
 
 /**
  * Created by lei on 2017/8/3.

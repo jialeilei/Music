@@ -7,14 +7,14 @@
     <RelativeLayout
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:background="@color/colorPrimary"
         android:visibility="visible">
         <ImageButton
             android:id="@+id/img_category"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginTop="12dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:background="@mipmap/category_white"/>
         <LinearLayout
@@ -27,29 +27,39 @@
                 android:id="@+id/tv_local"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="15dp"
                 android:textColor="@color/white"
                 android:gravity="center"
                 android:textSize="18sp"
-                android:text="本地音乐"/>
+                android:text="本地"/>
 
             <TextView
                 android:id="@+id/tv_online"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:layout_marginRight="15dp"
                 android:textColor="@color/white"
                 android:gravity="center"
                 android:textSize="18sp"
-                android:text="在线音乐"/>
+                android:text="在线"/>
+
+            <TextView
+                android:id="@+id/tv_collection"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:text="收藏"/>
 
         </LinearLayout>
 
 
         <ImageButton
             android:id="@+id/img_btn_search"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginTop="12dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
             android:layout_alignParentRight="true"
             android:background="@mipmap/search_white"/>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/music_listview_item_selector">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp">
+        <TextView
+            android:id="@+id/tv_playing"
+            android:layout_width="3dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorPrimary"
+            android:visibility="invisible"/>
+        <ImageView
+            android:id="@+id/img_music"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/default_music"/>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/img_music"
+            android:layout_toLeftOf="@+id/tv_duration"
+            android:text="title"
+            android:textSize="15sp"
+            android:textColor="@color/gray_5"/>
+
+        <TextView
+            android:id="@+id/tv_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:text=""
+            android:textSize="12sp"
+            android:textColor="@color/gray_5"/>
+
+        <TextView
+            android:id="@+id/tv_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/tv_title"
+            android:layout_toRightOf="@+id/img_music"
+            android:text="artist"
+            android:textSize="12sp"
+            android:textColor="@color/gray_5"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="1dp"
+        android:background="@color/gray_d"/>
+
+</LinearLayout>

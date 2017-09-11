@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -20,12 +21,14 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.google.gson.Gson;
-import com.lei.musicplayer.AppConstant;
+import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.FragmentAdapter;
 import com.lei.musicplayer.application.AppCache;
+import com.lei.musicplayer.fragment.CollectionFragment;
 import com.lei.musicplayer.fragment.LocalFragment;
 import com.lei.musicplayer.fragment.OnlineFragment;
+import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.service.PlayerService;
 import com.lei.musicplayer.service.OnPlayerServiceListener;
 import com.lei.musicplayer.util.LogTool;
@@ -43,6 +46,7 @@ public class MainActivity extends BaseActivity
     //view
     LocalFragment localFragment;
     OnlineFragment onlineFragment;
+    CollectionFragment collectionFragment;
     ImageButton img_next, img_play, img_category;
     ImageView img_bottom;
     TextView tvMusicName,tvMusicAuthor,tvMusicDuration;
@@ -53,12 +57,12 @@ public class MainActivity extends BaseActivity
     String DOWNLOAD_URL = "data/music/links?songIds=276867440";//songIds=276867440
 
     ViewPager viewPager;
-    TextView tvLocal,tvOnline;
+    TextView tvLocal,tvOnline,tvCollection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main);
 
         getPlayService().setOnPlayerListener(this);
         initView();
@@ -82,14 +86,17 @@ public class MainActivity extends BaseActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         tvLocal = (TextView) findViewById(R.id.tv_local);
         tvOnline = (TextView) findViewById(R.id.tv_online);
+        tvCollection = (TextView)findViewById(R.id.tv_collection);
         changeTitleColor(0);
 
         viewPager = (ViewPager) findViewById(R.id.main_view_pager);
         localFragment = new LocalFragment();
         onlineFragment = new OnlineFragment();
+        collectionFragment = new CollectionFragment();
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
         fragmentAdapter.addFragment(localFragment);
         fragmentAdapter.addFragment(onlineFragment);
+        fragmentAdapter.addFragment(collectionFragment);
         viewPager.setAdapter(fragmentAdapter);
         viewPager.setCurrentItem(0);
         img_category = (ImageButton) findViewById(R.id.img_category);
@@ -121,6 +128,7 @@ public class MainActivity extends BaseActivity
         viewPager.setOnPageChangeListener(this);
         tvLocal.setOnClickListener(this);
         tvOnline.setOnClickListener(this);
+        tvCollection.setOnClickListener(this);
         img_play.setOnClickListener(this);
         img_next.setOnClickListener(this);
         img_bottom.setOnClickListener(this);
@@ -171,13 +179,22 @@ public class MainActivity extends BaseActivity
     }
 
     private void changeTitleColor(int position) {
-        if (position == 0){
-            tvLocal.setTextColor(getResources().getColor(R.color.white));
-            tvOnline.setTextColor(getResources().getColor(R.color.gray_d));
-
-        }else {
-            tvOnline.setTextColor(getResources().getColor(R.color.white));
-            tvLocal.setTextColor(getResources().getColor(R.color.gray_d));
+        switch (position){
+            case 0:
+                tvLocal.setTextColor(getResources().getColor(R.color.white));
+                tvOnline.setTextColor(getResources().getColor(R.color.gray_e));
+                tvCollection.setTextColor(getResources().getColor(R.color.gray_e));
+                break;
+            case 1:
+                tvLocal.setTextColor(getResources().getColor(R.color.gray_e));
+                tvOnline.setTextColor(getResources().getColor(R.color.white));
+                tvCollection.setTextColor(getResources().getColor(R.color.gray_e));
+                break;
+            case 2:
+                tvLocal.setTextColor(getResources().getColor(R.color.gray_e));
+                tvOnline.setTextColor(getResources().getColor(R.color.gray_e));
+                tvCollection.setTextColor(getResources().getColor(R.color.white));
+                break;
         }
 
     }
@@ -208,7 +225,8 @@ public class MainActivity extends BaseActivity
                 sendPlayInfo(AppConstant.ACTION_PLAY_STOP,false);
                 break;
             case R.id.img_music_bottom:
-
+                LogTool.i(TAG,"img_music_bottom click");
+                showPlayFragment();
                 break;
             case R.id.tv_local:
                 viewPager.setCurrentItem(0);
@@ -218,12 +236,52 @@ public class MainActivity extends BaseActivity
                 viewPager.setCurrentItem(1);
                 changeTitleColor(1);
                 break;
+            case R.id.tv_collection:
+                viewPager.setCurrentItem(2);
+                changeTitleColor(2);
+                break;
             case R.id.img_category:
                 drawer.openDrawer(GravityCompat.START);
                 break;
             default:
                 break;
         }
+    }
+
+
+    private PlayFragment playFragment;
+
+
+    private void showPlayFragment() {
+        if (isShowingFragment){
+            return;
+        }
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.fragment_slide_up, 0);
+        if (playFragment == null){
+            playFragment = new PlayFragment();
+            ft.replace(android.R.id.content,playFragment);
+        }else {
+            ft.show(playFragment);
+        }
+        ft.commitAllowingStateLoss();
+        isShowingFragment = true;
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                playFragment.updateInfo();
+            }
+        },1000);
+    }
+
+    boolean isShowingFragment = false;
+    public void hidePlayingFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(0, R.anim.fragment_slide_down);
+        ft.hide(playFragment);
+        ft.commitAllowingStateLoss();
+        isShowingFragment = false;
     }
 
     /*
@@ -269,12 +327,18 @@ public class MainActivity extends BaseActivity
     //view
     @Override
     public void onBackPressed() {
+
+        if (isShowingFragment) {
+            hidePlayingFragment();
+            return;
+        }
+
         //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+            return;
         }
+        super.onBackPressed();
     }
 
     @Override

@@ -33,7 +33,6 @@ public class SplashActivity extends BaseActivity {
                     bindPlayerService();
                 }
             }, 2000);
-
         }else {
             startMainActivity();
             finish();
@@ -56,7 +55,8 @@ public class SplashActivity extends BaseActivity {
         startService(intent);
     }
 
-    ServiceConnection conn = new ServiceConnection() {
+    PlayerServiceConnection conn = new PlayerServiceConnection();
+    public class PlayerServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             PlayerService playerService = ((PlayerService.PlayerBinder) service).getService();
@@ -85,11 +85,22 @@ public class SplashActivity extends BaseActivity {
     };
 
     @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
     protected void onDestroy() {
-        LogTool.i(TAG,"onDestroy");
         if (conn != null){
             unbindService(conn);
         }
         super.onDestroy();
     }
+//    @Override
+//    protected void onDestroy() {
+//        if (conn != null && AppCache.getPlayService() == null){
+//            unbindService(conn);
+//        }
+//        super.onDestroy();
+//    }
 }

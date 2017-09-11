@@ -14,10 +14,10 @@ import java.util.List;
 /**
  * Created by lei on 2017/8/3.
  */
-public class LocalMusicListViewAdapter extends CommonAdapter<Mp3Info> {
+public class LocalListAdapter extends CommonAdapter<Mp3Info> {
 
     private int playing_position;
-    public LocalMusicListViewAdapter(Context context, List<Mp3Info> data, int mItemLayout) {
+    public LocalListAdapter(Context context, List<Mp3Info> data, int mItemLayout) {
         super(context, data, mItemLayout);
     }
 

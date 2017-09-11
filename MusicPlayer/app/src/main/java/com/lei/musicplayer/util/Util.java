@@ -1,24 +1,8 @@
 package com.lei.musicplayer.util;
 
-import android.app.Application;
 import android.content.Context;
-import android.database.Cursor;
-import android.os.SystemClock;
-import android.provider.MediaStore;
 
-import com.lei.musicplayer.bean.Mp3Info;
-import com.lei.musicplayer.bean.SongLinkResponse;
-import com.lei.musicplayer.bean.SongList;
-import com.lei.musicplayer.http.HttpHelper;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * Created by lei on 2017/8/2.
