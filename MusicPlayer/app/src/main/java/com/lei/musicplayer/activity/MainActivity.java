@@ -4,15 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import com.google.gson.Gson;
+import com.bumptech.glide.Glide;
 import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.FragmentAdapter;
@@ -41,7 +38,6 @@ public class MainActivity extends BaseActivity
     private static final String TAG = "MainActivity";
     DrawerLayout drawer;
     NavigationView navigationView;
-    ActionBarDrawerToggle toggle;
     private int play_progress = 0;
     //view
     LocalFragment localFragment;
@@ -51,11 +47,6 @@ public class MainActivity extends BaseActivity
     ImageView img_bottom;
     TextView tvMusicName,tvMusicAuthor,tvMusicDuration;
     SeekBar mSeekBarCurrent;
-    Gson gson = new Gson();
-    String TOP_RANK_URL = "http://music.baidu.com/top/dayhot/?pst=shouyeTop";
-    String BASE_URL = "http://music.baidu.com/";
-    String DOWNLOAD_URL = "data/music/links?songIds=276867440";//songIds=276867440
-
     ViewPager viewPager;
     TextView tvLocal,tvOnline,tvCollection;
 
@@ -67,17 +58,6 @@ public class MainActivity extends BaseActivity
         getPlayService().setOnPlayerListener(this);
         initView();
         setListener();
-        //setReceiver();
-        //setAnimation();
-    }
-
-    private void setAnimation() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
     }
 
     private void initView() {
@@ -114,14 +94,10 @@ public class MainActivity extends BaseActivity
     }
 
     private void setBottomMusicInfo() {
-        tvMusicName.setText(AppCache.getPlayingMp3Info().getTitle());
-        tvMusicAuthor.setText(AppCache.getPlayingMp3Info().getArtist());
-        if (AppCache.getPlayingMp3Info().getAlbumArt().length() > 0){
-            img_bottom.setImageBitmap(BitmapFactory.decodeFile(AppCache.getPlayingMp3Info().getAlbumArt()));
-        }else {
-            img_bottom.setImageResource(R.mipmap.default_music);
-        }
-
+        tvMusicName.setText(AppCache.getPlayingMusic().getTitle());
+        tvMusicAuthor.setText(AppCache.getPlayingMusic().getArtist());
+        String imgPath = AppCache.getPlayingMusic().getAlbumArt();
+        Glide.with(this).load(imgPath).placeholder(R.mipmap.default_music).into(img_bottom);
     }
 
     private void setListener() {
@@ -160,7 +136,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        play_progress = progress * (int) AppCache.getPlayingMp3Info().getDuration() / 100;
+        play_progress = progress * (int) AppCache.getPlayingMusic().getDuration() / 100;
     }
 
     @Override
@@ -219,7 +195,7 @@ public class MainActivity extends BaseActivity
         switch (v.getId()){
             case R.id.img_next:
                 sendPlayInfo(AppConstant.ACTION__NEXT, false);
-                //getPlayService().playNext();
+                getPlayService().playNext();
                 break;
             case R.id.img_play:
                 sendPlayInfo(AppConstant.ACTION_PLAY_STOP,false);
@@ -302,7 +278,7 @@ public class MainActivity extends BaseActivity
     @Override
     public void onMusicCurrentPosition(int currentPosition) {
         play_progress = currentPosition;
-        int progress = play_progress * 100 / (int) AppCache.getPlayingMp3Info().getDuration();
+        int progress = play_progress * 100 / (int) AppCache.getPlayingMusic().getDuration();
         mSeekBarCurrent.setProgress(progress);
         tvMusicDuration.setText("" + Util.formatTime(play_progress));
     }

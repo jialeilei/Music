@@ -11,12 +11,13 @@
         android:layout_height="match_parent">
     </android.support.v4.view.ViewPager>
 
-    <RelativeLayout
+    <com.lei.musicplayer.view.BottomRelativeLayout
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
+        android:focusableInTouchMode="true"
         android:visibility="visible">
         <ImageView
             android:id="@+id/img_music_bottom"
@@ -94,6 +95,6 @@
             android:max="100"
             android:layout_alignParentTop="true" />
 
-    </RelativeLayout>
+    </com.lei.musicplayer.view.BottomRelativeLayout>
 
 </RelativeLayout>

@@ -5,20 +5,17 @@ import com.lei.musicplayer.constant.MusicType;
 /**
  * Created by lei on 2017/8/2.
  */
-public class Mp3Info {
-    long id;
-    String title;
+public class Music {
+    long id;//songId
+    String title;//music name
     String artist;
     long duration;
     long size;
-    //local url of music
-    String url;
+    String url;//music url
+    String lrcLink;
     String album;
     String albumKey;
-    //image of album
-    String albumArt="";
-
-    @MusicType
+    String albumArt="";//pic
     int musicType;
 
     public int getMusicType() {
@@ -85,13 +82,13 @@ public class Mp3Info {
         this.url = url;
     }
 
-//    public String getAlbum() {
-//        return album;
-//    }
-//
-//    public void setAlbum(String album) {
-//        this.album = album;
-//    }
+    public String getLrcLink() {
+        return lrcLink;
+    }
+
+    public void setLrcLink(String lrcLink) {
+        this.lrcLink = lrcLink;
+    }
 
     public String getAlbumKey() {
         return albumKey;

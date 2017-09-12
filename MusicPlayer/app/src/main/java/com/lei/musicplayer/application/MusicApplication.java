@@ -17,7 +17,7 @@ public class MusicApplication extends Application {
 
         AppCache.init(this);
         LogTool.i(TAG, "before " + System.currentTimeMillis());
-        HttpClient.initRetrofit();
+        HttpClient.init();
         LogTool.i(TAG, "after " + System.currentTimeMillis());
 
     }

@@ -2,7 +2,7 @@ package com.lei.musicplayer.application;
 
 import android.app.Application;
 import android.content.Context;
-import com.lei.musicplayer.bean.Mp3Info;
+import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.service.PlayerService;
 import com.lei.musicplayer.util.Util;
 import java.util.ArrayList;
@@ -16,9 +16,9 @@ public class AppCache {
     private PlayerService mPlayerService;
     private static AppCache mAppCache;
     private static Context mContext;
-    private List<Mp3Info> localMusicList = new ArrayList<Mp3Info>();
+    private List<Music> localMusicList = new ArrayList<Music>();
     private static int mSystemStatusHeight;
-    private static int mMusicPlayPosition;
+    private static Music mPlayingMusic;
 
 
     private AppCache(){}
@@ -49,11 +49,11 @@ public class AppCache {
         getInstance().mPlayerService = service;
     }
 
-    public static void setLocalMusicList(List<Mp3Info> list){
+    public static void setLocalMusicList(List<Music> list){
         getInstance().localMusicList = list;
     }
 
-    public static List<Mp3Info> getLocalMusicList(){
+    public static List<Music> getLocalMusicList(){
         return getInstance().localMusicList;
     }
 
@@ -64,12 +64,15 @@ public class AppCache {
         return  mSystemStatusHeight;
     }
 
-    public static void setPlayingPosition(int position){
-        mMusicPlayPosition = position;
+    public static void setPlayingMusic(Music info){
+        mPlayingMusic = info;
     }
 
-    public static Mp3Info getPlayingMp3Info(){
-        return getInstance().localMusicList.get(mMusicPlayPosition);
+    public static Music getPlayingMusic(){
+        if (mPlayingMusic == null){
+            mPlayingMusic = getInstance().localMusicList.get(0);
+        }
+        return mPlayingMusic;
     }
 
     /*

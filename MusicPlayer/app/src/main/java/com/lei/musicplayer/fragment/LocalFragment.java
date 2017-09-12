@@ -1,6 +1,7 @@
 package com.lei.musicplayer.fragment;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.LocalListAdapter;
 import com.lei.musicplayer.application.AppCache;
+import com.lei.musicplayer.util.LogTool;
 
 
 /**
@@ -17,6 +19,7 @@ import com.lei.musicplayer.application.AppCache;
  */
 public class LocalFragment extends BaseFragment implements AdapterView.OnItemClickListener{
 
+    private static final String TAG = "LocalFragment";
     private LocalListAdapter adapter;
     private ListView mLocalMusicListView;
 
@@ -34,12 +37,13 @@ public class LocalFragment extends BaseFragment implements AdapterView.OnItemCli
         mLocalMusicListView.setPadding(0, AppCache.getSystemStatusHeight() * 2 + 45, 0, 50);
         mLocalMusicListView.setAdapter(adapter);
         mLocalMusicListView.setOnItemClickListener(this);
+        //LogTool.i(TAG," Environment.getExternalStorageDirectory():"+ Environment.getExternalStorageDirectory());
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        getPlayerService().play(0, position);
+        getPlayerService().playStartMusic(AppCache.getLocalMusicList().get(position));
     }
 
     public void refreshMusicList(){

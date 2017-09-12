@@ -14,7 +14,8 @@ import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.LrcContent;
-import com.lei.musicplayer.bean.Mp3Info;
+import com.lei.musicplayer.bean.Music;
+import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.LrcProcess;
@@ -32,7 +33,7 @@ public class PlayerService extends Service {
     //private String path;
     private int play_progress = 0;//the current progress of one music
     public int play_position = 0;//the current position of music in list
-    private List<Mp3Info> mLocalMusicList = new ArrayList<Mp3Info>();
+    private List<Music> mLocalMusicList = new ArrayList<Music>();
     private int mPlayType = AppConstant.CIRCLE_ALL;
     private OnPlayerServiceListener mPlayerServiceListener;
 
@@ -157,35 +158,44 @@ public class PlayerService extends Service {
         if (getPlayPosition > -1){//listView列表点击歌曲，直接0进度开始播放歌曲
             play_progress = 0;
             play_position = getPlayPosition;
-            play(play_progress, play_position);
+            play();
         }else{//暂停、开始按钮点击歌曲,继续上次进度播放
             if (mediaPlayer.isPlaying()){//暂停
                 stop();
             }else {//继续上次位置播放
-                play(play_progress,play_position);
+                play();
             }
         }
     }
 
-    private void seekBarPlay(int shortTimeProgress) {
-        play_progress = shortTimeProgress;
-        play(play_progress, play_position);
+    private void seekBarPlay(int progress) {
+        play_progress = progress;
+        play();
     }
 
-    public void play(final int progress,final int playPosition) {
-        play_progress = progress;
-        play_position = playPosition;
+    public void play(){
+        play(mLocalMusicList.get(play_position));
+    }
+    /*
+    * start music from zero
+    * */
+    public void playStartMusic(Music music){
+        play_progress = 0;
+        play(music);
+    }
+
+    public void play(Music music) {
         mediaPlayer.reset();
         try {
-            mediaPlayer.setDataSource(mLocalMusicList.get(playPosition).getUrl());
+            mediaPlayer.setDataSource(music.getUrl());
             mediaPlayer.prepare();
             //注册一个监听器
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mediaPlayer.start();
-                    if (progress > 0) {
-                        mediaPlayer.seekTo(progress);
+                    if (play_progress > 0) {
+                        mediaPlayer.seekTo(play_progress);
                     }
                 }
             });
@@ -196,7 +206,7 @@ public class PlayerService extends Service {
                 }
             });
 
-            AppCache.setPlayingPosition(play_position);
+            AppCache.setPlayingMusic(music);
             mPlayerServiceListener.onMusicPlay();
             handler.sendEmptyMessage(1);
             initLrc();
@@ -206,6 +216,7 @@ public class PlayerService extends Service {
         }
     }
 
+
     private void playPrevious() {
         play_progress = 0;
         if (play_position == 0){
@@ -213,7 +224,7 @@ public class PlayerService extends Service {
         }else {
             play_position --;
         }
-        play(play_progress, play_position);
+        play();
     }
 
     public void playNext() {
@@ -223,7 +234,7 @@ public class PlayerService extends Service {
         }else {
             play_position ++;
         }
-        play(play_progress, play_position);
+        play();
     }
 
     private void pause() {
@@ -253,13 +264,6 @@ public class PlayerService extends Service {
     }
 
     public void onDestroy(){
-//        mPlayer.reset();
-//        mPlayer.release();
-//        mPlayer = null;
-//        mAudioFocusManager.abandonAudioFocus();
-//        mMediaSessionManager.release();
-//        Notifier.cancelAll();
-//        AppCache.setPlayService(null);
         if (mediaPlayer != null){
             mediaPlayer.reset();
             mediaPlayer.release();
@@ -286,8 +290,8 @@ public class PlayerService extends Service {
     /*
    * 获取本地音乐
    * */
-    private List<Mp3Info> getLocalMusic(){
-        List<Mp3Info> infos = new ArrayList<Mp3Info>();
+    private List<Music> getLocalMusic(){
+        List<Music> infos = new ArrayList<Music>();
         Cursor cursor = getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,
                 MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
@@ -306,14 +310,14 @@ public class PlayerService extends Service {
             //the path of the music
             String url = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
             String albumId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-            //LogTool.i(TAG,"artist: " + artist);
+            LogTool.i(TAG,"url: " + url);
             //getCoverImage(Integer.parseInt(albumId));
             //String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
             String albumKey = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_KEY));
             int isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.IS_MUSIC));
             //LogTool.i(TAG,"albumArt: "+albumArt);
 
-            Mp3Info info = new Mp3Info();
+            Music info = new Music();
             if (isMusic != 0){
                 info.setId(id);
                 info.setTitle(title);
@@ -322,15 +326,14 @@ public class PlayerService extends Service {
                 info.setSize(size);
                 info.setUrl(url);
                 info.setAlbumKey(albumKey);
+                info.setMusicType(MusicType.local);
                 infos.add(info);
             }
-
         }
-
         return getAlbumArt(infos);
     }
 
-    public List<Mp3Info> getAlbumArt(List<Mp3Info> infos){
+    public List<Music> getAlbumArt(List<Music> infos){
         String[] mediaColumns1 = new String[] {
                 MediaStore.Audio.Albums.ALBUM_ART,
                 MediaStore.Audio.Albums.ALBUM,
@@ -348,7 +351,7 @@ public class PlayerService extends Service {
                 LogTool.i(TAG, "ALBUM_ART 0 " + album_art
                         + "ALBUM_ART 1 " + album + " ALBUM_ART 2 " + albumKey);
                 if (album_art != null && album != null){
-                    for (Mp3Info info : infos) {
+                    for (Music info : infos) {
                         if (info.getAlbumKey().equals(albumKey)){
                             info.setAlbumArt(album_art);
                             break;

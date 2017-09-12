@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
-import com.lei.musicplayer.bean.Mp3Info;
+import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.view.LrcView;
 
 
@@ -46,7 +46,7 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,V
     }
 
     public static void updateInfo(){
-        Mp3Info info = AppCache.getPlayingMp3Info();
+        Music info = AppCache.getPlayingMusic();
         tvAuthor.setText(info.getArtist());
         tvName.setText(info.getTitle());
     }

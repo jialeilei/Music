@@ -2,6 +2,7 @@ package com.lei.musicplayer.util;
 
 import android.content.Context;
 
+import java.io.File;
 import java.lang.reflect.Field;
 
 /**
@@ -67,63 +68,12 @@ public class Util {
         return sbar;
     }
 
-//
-//    private void getHotRank() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Document doc = null;
-//                LogTool.i(TAG,"start to get doc "+ SystemClock.currentThreadTimeMillis());
-//                try {
-//                    doc = Jsoup.connect(TOP_RANK_URL).get();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                LogTool.i(TAG,"get doc finished "+SystemClock.currentThreadTimeMillis());
-//                Elements elements = doc.getElementsByClass("normal-song-list");
-//                Elements lead_top = doc.getElementsByClass("song-item-hook");
-//                String str="";
-//
-//                for (Element element : elements) {
-//                    LogTool.i(TAG,element.text()+"");
-//                }
-//                LogTool.i(TAG," item size: " + lead_top.size());
-//                for (Element element : lead_top) {
-//                    SongList mSongList = new SongList();
-//                    mSongList = gson.fromJson(element.attr("data-songitem"),
-//                            SongList.class);
-//                    songLists.add(mSongList);
-//                    LogTool.i(TAG," item:"+element.attr("data-songitem")
-//                                    +" title: "+element.getElementsByClass("song-title").attr("title")
-//                    );
-//                }
-//                LogTool.i(TAG, "SongList.size: " + songLists.size());
-//                for (SongList songList : songLists) {
-//                    LogTool.i(TAG,songList.getSongItem().getSname()+" id:"+songList.getSongItem().getSid());
-//                }
-//
-//            }
-//        }).start();
-//    }
-//
-//    private void getDownloadLink() {
-//        HttpHelper helper = retrofit.create(HttpHelper.class);
-//        helper.getSongData(276867440).enqueue(new retrofit2.Callback<SongLinkResponse>() {
-//            @Override
-//            public void onResponse(retrofit2.Call<SongLinkResponse> call, retrofit2.Response<SongLinkResponse> response) {
-//
-//                if (response.isSuccessful()){
-//                    LogTool.i(TAG,response.body().getData().getSongList().toString());
-//                }else {
-//                    LogTool.i(TAG,"onResponse fail");
-//                }
-//            }
-//
-//
-//            @Override
-//            public void onFailure(retrofit2.Call<SongLinkResponse> call, Throwable t) {
-//                LogTool.i(TAG,"onFail");
-//            }
-//        });
-//    }
+    public static String mkdirs(String dir) {
+        File file = new File(dir);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return dir;
+    }
+
 }

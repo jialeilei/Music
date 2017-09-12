@@ -13,6 +13,7 @@ import com.lei.musicplayer.bean.OnLineMusicList;
 import com.lei.musicplayer.bean.OnlineMusic;
 import com.lei.musicplayer.bean.SongListInfo;
 import com.lei.musicplayer.http.HttpClient;
+import com.lei.musicplayer.http.MusicCallBack;
 import com.lei.musicplayer.util.LogTool;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,23 +74,16 @@ public class OnlineListAdapter extends BaseAdapter {
             holder.music2.setText("waiting...");
             holder.music3.setText("waiting...");
 
-            //开始请求数据
-            HttpClient.getApiService().getOnLineMusicList(info.getType(), String.valueOf(3),
-                    String.valueOf(0), HttpClient.METHOD_GET_MUSIC_LIST).enqueue(new Callback<OnLineMusicList>() {
+            HttpClient.getOnlineMusicList(info.getType(), 3, 0, new MusicCallBack<OnLineMusicList>() {
                 @Override
-                public void onResponse(Call<OnLineMusicList> call, Response<OnLineMusicList> response) {
-                    if (response.isSuccessful()) {
-                        //LogTool.i(TAG, "onResponse " + response.body().getSong_list().toString());
-                        praseData(response.body(), info);
-                        setData(info, holder);
-                    } else {
-                        LogTool.i(TAG, "response fail ");
-                    }
+                public void onSuccess(OnLineMusicList response) {
+                    praseData(response, info);
+                    setData(info, holder);
                 }
 
                 @Override
-                public void onFailure(Call<OnLineMusicList> call, Throwable t) {
-                    LogTool.i(TAG, "onFailure");
+                public void onFail(Throwable t) {
+                    LogTool.i(TAG, "response fail ");
                 }
             });
 

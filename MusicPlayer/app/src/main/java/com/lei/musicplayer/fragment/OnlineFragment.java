@@ -8,15 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.activity.RankActivity;
 import com.lei.musicplayer.adapter.OnlineListAdapter;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.SongListInfo;
 import com.lei.musicplayer.constant.Extra;
-import com.lei.musicplayer.util.LogTool;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,13 +52,11 @@ public class OnlineFragment extends BaseFragment implements AdapterView.OnItemCl
         adapter = new OnlineListAdapter(infos,getActivity());
         lv_online.setAdapter(adapter);
         lv_online.setOnItemClickListener(this);
-
-        LogTool.i(TAG, "infos.size: " + infos.size());
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        LogTool.i(TAG,"Position: " + position);
+        //LogTool.i(TAG,"Position: " + position);
         SongListInfo info = infos.get(position);
         Intent intent = new Intent(getActivity(), RankActivity.class);
         intent.putExtra(Extra.SONG_LIST_INFO,info);
