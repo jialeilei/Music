@@ -2,6 +2,8 @@ package com.lei.musicplayer.http;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.bean.MusicLink;
@@ -119,6 +121,7 @@ public class HttpClient {
     }
 
     public static void download(final Music music, final MusicCallBack callBack){
+        Util.ToastShort("正在下载");
         getApiService().download(music.getUrl()).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -142,9 +145,9 @@ public class HttpClient {
                 try {
                     String basePath = Environment.getExternalStorageDirectory()
                             + "/MusicPlayer/music/";
-                    //String allPath = basePath + music.getTitle()+"-"+music.getArtist()+".mp3";
+                    String childPath =  music.getTitle() + "-" + music.getArtist() + ".mp3";
                     Util.mkdirs(basePath);
-                    File file = new File(basePath,music.getTitle()+"-"+music.getArtist()+".mp3");
+                    File file = new File(basePath,childPath);
                     FileOutputStream fos = new FileOutputStream(file);
                     BufferedInputStream bis = new BufferedInputStream(is);
                     byte[] buffer = new byte[1024];
@@ -156,13 +159,24 @@ public class HttpClient {
                     fos.close();
                     bis.close();
                     is.close();
-                    LogTool.i(TAG,"writeToDir finished ");
+                    LogTool.i(TAG, "writeToDir finished ");
+                    Util.updateMedia(basePath);
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Util.ToastShort("下载完成");
+                        }
+                    });
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+
             }
         }).start();
     }
 
+    static Handler handler = new Handler(Looper.getMainLooper());
 
 }

@@ -19,6 +19,8 @@ import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.LrcProcess;
+import com.lei.musicplayer.util.Util;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -278,7 +280,7 @@ public class PlayerService extends Service {
     * 扫描本地音乐
     * */
     public void scanLocalMusic(ScanCallBack callBack){
-        mLocalMusicList = getLocalMusic();
+        mLocalMusicList = Util.getLocalMusic();
         if (mLocalMusicList != null ){
             AppCache.setLocalMusicList(mLocalMusicList);
             callBack.onSuccess();
@@ -287,83 +289,6 @@ public class PlayerService extends Service {
         }
     }
 
-    /*
-   * 获取本地音乐
-   * */
-    private List<Music> getLocalMusic(){
-        List<Music> infos = new ArrayList<Music>();
-        Cursor cursor = getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,
-                MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
-
-        for (int i = 0; i < cursor.getCount(); i++) {
-            cursor.moveToNext();
-            long duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-            //对歌曲长度进行过滤
-            if (duration < AppConstant.MUSIC_DURATION){
-                continue;
-            }
-            long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
-            String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-            String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-            long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
-            //the path of the music
-            String url = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-            String albumId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-            LogTool.i(TAG,"url: " + url);
-            //getCoverImage(Integer.parseInt(albumId));
-            //String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-            String albumKey = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_KEY));
-            int isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.IS_MUSIC));
-            //LogTool.i(TAG,"albumArt: "+albumArt);
-
-            Music info = new Music();
-            if (isMusic != 0){
-                info.setId(id);
-                info.setTitle(title);
-                info.setArtist(artist);
-                info.setDuration(duration);
-                info.setSize(size);
-                info.setUrl(url);
-                info.setAlbumKey(albumKey);
-                info.setMusicType(MusicType.local);
-                infos.add(info);
-            }
-        }
-        return getAlbumArt(infos);
-    }
-
-    public List<Music> getAlbumArt(List<Music> infos){
-        String[] mediaColumns1 = new String[] {
-                MediaStore.Audio.Albums.ALBUM_ART,
-                MediaStore.Audio.Albums.ALBUM,
-                MediaStore.Audio.Albums.ALBUM_KEY};
-        Cursor cursor1 = getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                mediaColumns1, null, null,
-                null);
-        if (cursor1 != null) {
-            cursor1.moveToFirst();
-            do {
-                String album_art =  cursor1.getString(0);
-                String album =  cursor1.getString(1);
-                String albumKey = cursor1.getString(2);
-                LogTool.i(TAG, "ALBUM_ART 0 " + album_art
-                        + "ALBUM_ART 1 " + album + " ALBUM_ART 2 " + albumKey);
-                if (album_art != null && album != null){
-                    for (Music info : infos) {
-                        if (info.getAlbumKey().equals(albumKey)){
-                            info.setAlbumArt(album_art);
-                            break;
-                        }
-                    }
-                }
-            } while (cursor1.moveToNext());
-            cursor1.close();
-        }
-
-        return infos;
-    }
 
     public void setOnPlayerListener(OnPlayerServiceListener listener){
         mPlayerServiceListener = listener;
