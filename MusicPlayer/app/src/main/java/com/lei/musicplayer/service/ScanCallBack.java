@@ -7,6 +7,6 @@ public interface ScanCallBack {
 
     void onFail(String msg);
 
-    void onSuccess();
+    void onFinish();
 
 }

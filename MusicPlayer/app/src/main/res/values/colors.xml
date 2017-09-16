@@ -3,6 +3,7 @@
     <color name="colorPrimary">@color/red</color>
     <color name="colorPrimaryDark">@color/colorPrimary</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="text_color">@color/gray_5</color>
     <color name="white">#FFFFFF</color>
     <color name="gray_fe">#fefefe</color>
     <color name="gray_e">#eeeeee</color>
@@ -11,6 +12,6 @@
     <color name="bg_play">#777777</color>
     <color name="gray_5">#555555</color>
     <color name="gray_3">#333333</color>
-    <color name="red">#F44336</color>
+    <color name="red">#f44336</color>
 
 </resources>

@@ -14,6 +14,8 @@ import com.lei.musicplayer.adapter.OnlineListAdapter;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.SongListInfo;
 import com.lei.musicplayer.constant.Extra;
+import com.lei.musicplayer.util.LogTool;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,4 +65,8 @@ public class OnlineFragment extends BaseFragment implements AdapterView.OnItemCl
         startActivity(intent);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

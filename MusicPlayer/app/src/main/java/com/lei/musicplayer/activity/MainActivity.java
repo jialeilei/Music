@@ -22,7 +22,7 @@ import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.FragmentAdapter;
 import com.lei.musicplayer.application.AppCache;
-import com.lei.musicplayer.fragment.CollectionFragment;
+import com.lei.musicplayer.fragment.HomeFragment;
 import com.lei.musicplayer.fragment.LocalFragment;
 import com.lei.musicplayer.fragment.OnlineFragment;
 import com.lei.musicplayer.fragment.PlayFragment;
@@ -40,15 +40,15 @@ public class MainActivity extends BaseActivity
     NavigationView navigationView;
     private int play_progress = 0;
     //view
-    LocalFragment localFragment;
+    public static LocalFragment localFragment;
     OnlineFragment onlineFragment;
-    CollectionFragment collectionFragment;
+    public HomeFragment homeFragment;
     ImageButton img_next, img_play, img_category;
     ImageView img_bottom;
     TextView tvMusicName,tvMusicAuthor,tvMusicDuration;
     SeekBar mSeekBarCurrent;
     ViewPager viewPager;
-    TextView tvLocal,tvOnline,tvCollection;
+    TextView tvLocal,tvOnline,tvHome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,17 +66,17 @@ public class MainActivity extends BaseActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         tvLocal = (TextView) findViewById(R.id.tv_local);
         tvOnline = (TextView) findViewById(R.id.tv_online);
-        tvCollection = (TextView)findViewById(R.id.tv_collection);
+        tvHome = (TextView)findViewById(R.id.tv_home);
         changeTitleColor(0);
 
         viewPager = (ViewPager) findViewById(R.id.main_view_pager);
+        homeFragment = new HomeFragment();
         localFragment = new LocalFragment();
         onlineFragment = new OnlineFragment();
-        collectionFragment = new CollectionFragment();
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
+        fragmentAdapter.addFragment(homeFragment);
         fragmentAdapter.addFragment(localFragment);
         fragmentAdapter.addFragment(onlineFragment);
-        fragmentAdapter.addFragment(collectionFragment);
         viewPager.setAdapter(fragmentAdapter);
         viewPager.setCurrentItem(0);
         img_category = (ImageButton) findViewById(R.id.img_category);
@@ -104,7 +104,7 @@ public class MainActivity extends BaseActivity
         viewPager.setOnPageChangeListener(this);
         tvLocal.setOnClickListener(this);
         tvOnline.setOnClickListener(this);
-        tvCollection.setOnClickListener(this);
+        tvHome.setOnClickListener(this);
         img_play.setOnClickListener(this);
         img_next.setOnClickListener(this);
         img_bottom.setOnClickListener(this);
@@ -157,19 +157,20 @@ public class MainActivity extends BaseActivity
     private void changeTitleColor(int position) {
         switch (position){
             case 0:
-                tvLocal.setTextColor(getResources().getColor(R.color.white));
+                tvLocal.setTextColor(getResources().getColor(R.color.gray_e));
                 tvOnline.setTextColor(getResources().getColor(R.color.gray_e));
-                tvCollection.setTextColor(getResources().getColor(R.color.gray_e));
+                tvHome.setTextColor(getResources().getColor(R.color.white));
                 break;
             case 1:
-                tvLocal.setTextColor(getResources().getColor(R.color.gray_e));
-                tvOnline.setTextColor(getResources().getColor(R.color.white));
-                tvCollection.setTextColor(getResources().getColor(R.color.gray_e));
+                tvLocal.setTextColor(getResources().getColor(R.color.white));
+                tvOnline.setTextColor(getResources().getColor(R.color.gray_e));
+                tvHome.setTextColor(getResources().getColor(R.color.gray_e));
                 break;
             case 2:
                 tvLocal.setTextColor(getResources().getColor(R.color.gray_e));
-                tvOnline.setTextColor(getResources().getColor(R.color.gray_e));
-                tvCollection.setTextColor(getResources().getColor(R.color.white));
+                tvOnline.setTextColor(getResources().getColor(R.color.white));
+                tvHome.setTextColor(getResources().getColor(R.color.gray_e));
+
                 break;
         }
 
@@ -199,22 +200,23 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.img_play:
                 sendPlayInfo(AppConstant.ACTION_PLAY_STOP,false);
+
                 break;
             case R.id.img_music_bottom:
                 LogTool.i(TAG,"img_music_bottom click");
                 showPlayFragment();
                 break;
             case R.id.tv_local:
-                viewPager.setCurrentItem(0);
-                changeTitleColor(0);
-                break;
-            case R.id.tv_online:
                 viewPager.setCurrentItem(1);
                 changeTitleColor(1);
                 break;
-            case R.id.tv_collection:
+            case R.id.tv_online:
                 viewPager.setCurrentItem(2);
                 changeTitleColor(2);
+                break;
+            case R.id.tv_home:
+                viewPager.setCurrentItem(0);
+                changeTitleColor(0);
                 break;
             case R.id.img_category:
                 drawer.openDrawer(GravityCompat.START);

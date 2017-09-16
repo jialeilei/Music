@@ -9,4 +9,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_playlist">play list</string>
+    <string name="home_collection">collection</string>
+    <string name="main_title_collection">收藏</string>
+    <string name="main_title_local">本地</string>
+    <string name="main_title_online">在线</string>
+    <string name="main_title_home">主页</string>
+    <string name="home_playlist_text">列表为空~</string>
 </resources>

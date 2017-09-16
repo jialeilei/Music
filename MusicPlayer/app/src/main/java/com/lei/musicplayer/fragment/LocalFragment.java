@@ -1,7 +1,6 @@
 package com.lei.musicplayer.fragment;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,7 @@ import com.lei.musicplayer.util.LogTool;
 public class LocalFragment extends BaseFragment implements AdapterView.OnItemClickListener{
 
     private static final String TAG = "LocalFragment";
-    private LocalListAdapter adapter;
+    public static LocalListAdapter adapter;
     private ListView mLocalMusicListView;
 
     @Nullable
@@ -53,7 +52,24 @@ public class LocalFragment extends BaseFragment implements AdapterView.OnItemCli
     }
 
     private void refreshListView(){
-        adapter.setPlayingPosition(getPlayerService().play_position);
         adapter.notifyDataSetChanged();
+    }
+
+
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * This is generally
+     * tied to {@link Activity#onResume() Activity.onResume} of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        LogTool.i(TAG, "local onDestroy");
+        super.onDestroy();
     }
 }

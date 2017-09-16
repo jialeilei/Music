@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_playlist">播放列表</string>
+    <string name="home_collection">收藏列表</string>
+    <string name="main_title_local">本地</string>
+    <string name="main_title_online">在线</string>
+    <string name="main_title_home">主页</string>
+    <string name="home_playlist_text">列表为空~</string>
+</resources>

@@ -7,35 +7,34 @@ import android.view.View;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.Music;
+import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
 import java.util.List;
 
 /**
- * Created by lei on 2017/8/3.
+ * Created by lei on 2017/9/16.
  */
-public class LocalListAdapter extends CommonAdapter<Music> {
+public class HomePlaylistAdapter extends CommonAdapter<Music> {
 
-    //private int playing_position;
+    private static final String TAG = "PlaylistAdapter";
 
-    public LocalListAdapter(Context context, List<Music> data, int mItemLayout) {
+    public HomePlaylistAdapter(Context context, List<Music> data, int mItemLayout) {
         super(context, data, mItemLayout);
+        if(AppCache.getMusicPlaylist() == null){
+            LogTool.i(TAG,"musicPlaylist is null");
+        }else {
+            LogTool.i(TAG,"musicPlaylist size is " + AppCache.getMusicPlaylist().size());
+        }
     }
-
-    public void refreshData(){
-        mData = AppCache.getLocalMusicList();
-        this.notifyDataSetChanged();
-    }
-
 
     @Override
     public void convert(ViewHolder viewHolder, Music item, int position) {
-
         viewHolder.setText(R.id.tv_title, item.getTitle());
         viewHolder.setText(R.id.tv_artist, item.getArtist());
         viewHolder.setText(R.id.tv_duration, String.valueOf(Util.formatTime(item.getDuration())));
-        if (AppCache.getLocalMusicList().get(position).getAlbumArt().length() > 0){
+        if (AppCache.getMusicPlaylist().get(position).getAlbumArt().length() > 0){
             Bitmap bp = BitmapFactory.decodeFile(
-                    AppCache.getLocalMusicList().get(position).getAlbumArt());
+                    AppCache.getMusicPlaylist().get(position).getAlbumArt());
             viewHolder.setImageBitmap(R.id.img_music,bp);
         }else {
             viewHolder.setImageResource(R.id.img_music,R.mipmap.default_music);
@@ -46,11 +45,7 @@ public class LocalListAdapter extends CommonAdapter<Music> {
         }else {
             viewHolder.getView(R.id.tv_playing).setVisibility(View.INVISIBLE);
         }
-
     }
 
-//    public void setPlayingPosition(int position){
-//        playing_position = position;
-//    }
 
 }

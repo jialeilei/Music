@@ -126,8 +126,9 @@ public class HttpClient {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    writeToDir(music, response.body().byteStream());
-                    callBack.onSuccess("length: " + response.body().contentLength());
+                    Util.writeMusicToDir(music,response.body().byteStream(),callBack);
+                    //callBack.onSuccess("length: " + response.body().contentLength());
+                    Util.ToastShort("下载完成");
                 }
             }
 
@@ -138,45 +139,6 @@ public class HttpClient {
         });
     }
 
-    private static void writeToDir(final Music music, final InputStream is) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String basePath = Environment.getExternalStorageDirectory()
-                            + "/MusicPlayer/music/";
-                    String childPath =  music.getTitle() + "-" + music.getArtist() + ".mp3";
-                    Util.mkdirs(basePath);
-                    File file = new File(basePath,childPath);
-                    FileOutputStream fos = new FileOutputStream(file);
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    while ((len = bis.read(buffer)) != -1) {
-                        fos.write(buffer, 0, len);
-                        fos.flush();
-                    }
-                    fos.close();
-                    bis.close();
-                    is.close();
-                    LogTool.i(TAG, "writeToDir finished ");
-                    Util.updateMedia(basePath);
 
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Util.ToastShort("下载完成");
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-        }).start();
-    }
-
-    static Handler handler = new Handler(Looper.getMainLooper());
 
 }

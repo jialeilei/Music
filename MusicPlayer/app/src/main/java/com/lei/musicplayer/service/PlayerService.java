@@ -2,12 +2,10 @@ package com.lei.musicplayer.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.animation.AnimationUtils;
 import com.lei.musicplayer.constant.AppConstant;
@@ -15,12 +13,10 @@ import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
-import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.LrcProcess;
 import com.lei.musicplayer.util.Util;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +32,6 @@ public class PlayerService extends Service {
     private int play_progress = 0;//the current progress of one music
     public int play_position = 0;//the current position of music in list
     private List<Music> mLocalMusicList = new ArrayList<Music>();
-    private int mPlayType = AppConstant.CIRCLE_ALL;
     private OnPlayerServiceListener mPlayerServiceListener;
 
     //歌词
@@ -178,15 +173,25 @@ public class PlayerService extends Service {
     public void play(){
         play(mLocalMusicList.get(play_position));
     }
+
+    public void play(int position){
+        play_position = position;
+    }
+
     /*
-    * start music from zero
+    * 开始停止点击进入
+    * */
+
+    /*
+    * 列表点击进入
     * */
     public void playStartMusic(Music music){
         play_progress = 0;
         play(music);
     }
 
-    public void play(Music music) {
+
+    private void play(Music music) {
         mediaPlayer.reset();
         try {
             mediaPlayer.setDataSource(music.getUrl());
@@ -283,7 +288,7 @@ public class PlayerService extends Service {
         mLocalMusicList = Util.getLocalMusic();
         if (mLocalMusicList != null ){
             AppCache.setLocalMusicList(mLocalMusicList);
-            callBack.onSuccess();
+            callBack.onFinish();
         }else {
             callBack.onFail("localMusicList is null");
         }

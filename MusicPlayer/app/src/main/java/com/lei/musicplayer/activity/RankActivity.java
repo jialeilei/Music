@@ -15,8 +15,10 @@ import com.lei.musicplayer.bean.OnlineMusic;
 import com.lei.musicplayer.bean.SongListInfo;
 import com.lei.musicplayer.constant.Extra;
 import com.lei.musicplayer.constant.MusicType;
+import com.lei.musicplayer.fragment.LocalFragment;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.http.MusicCallBack;
+import com.lei.musicplayer.service.ScanCallBack;
 import com.lei.musicplayer.util.LogTool;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,9 +109,8 @@ public class RankActivity extends BaseActivity implements
         HttpClient.getMusicLink(songId, new MusicCallBack<MusicLink>() {
             @Override
             public void onSuccess(MusicLink response) {
-                LogTool.i(TAG, "onSuccess link; " + response.getBitrate().getFile_link());
+                LogTool.i(TAG, "Success link; " + response.getBitrate().getFile_link());
                 playOnlineMusic(response.getBitrate().getFile_link(),response.getBitrate().getFile_duration()*1000);
-
             }
 
             @Override
@@ -149,12 +150,25 @@ public class RankActivity extends BaseActivity implements
             @Override
             public void onSuccess(Object response) {
                 LogTool.i(TAG, "onSuccess " + response.toString());
+                getPlayService().scanLocalMusic(new ScanCallBack() {
+                    @Override
+                    public void onFail(String msg) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        LogTool.i(TAG, "LocalFragment.adapter.notifyDataSetChanged() ");
+                        MainActivity.localFragment.adapter.refreshData();
+                    }
+                });
             }
 
             @Override
             public void onFail(Throwable t) {
                 LogTool.i(TAG, "download onFail " + t);
             }
+
         });
 
 

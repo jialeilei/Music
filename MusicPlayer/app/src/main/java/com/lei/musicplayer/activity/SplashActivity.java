@@ -69,7 +69,7 @@ public class SplashActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onSuccess() {
+                public void onFinish() {
                     LogTool.i(TAG,"onSuccess " + AppCache.getLocalMusicList().size());
                     startMainActivity();
                     finish();

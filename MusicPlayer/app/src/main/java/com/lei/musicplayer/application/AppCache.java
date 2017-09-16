@@ -17,6 +17,7 @@ public class AppCache {
     private static AppCache mAppCache;
     private static Context mContext;
     private List<Music> localMusicList = new ArrayList<Music>();
+    public static List<Music> musicPlayList = new ArrayList<Music>();
     private static int mSystemStatusHeight;
     private static Music mPlayingMusic;
 
@@ -54,6 +55,17 @@ public class AppCache {
     }
 
     public static List<Music> getLocalMusicList(){
+        return getInstance().localMusicList;
+    }
+
+    public static void setMusicPlaylist(List<Music> list){
+        getInstance().musicPlayList = list;
+    }
+
+    public static List<Music> getMusicPlaylist(){
+//        if (musicPlayList == null){
+//            musicPlayList = new ArrayList<Music>();
+//        }
         return getInstance().localMusicList;
     }
 

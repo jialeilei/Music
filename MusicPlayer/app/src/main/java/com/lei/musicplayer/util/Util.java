@@ -4,29 +4,38 @@ import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.widget.Toast;
-
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.constant.MusicType;
-
+import com.lei.musicplayer.http.MusicCallBack;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by lei on 2017/8/2.
+ * 工具类
  */
 public class Util {
 
     static Context mContext;
+    //储存路径
+    static String BASIC_PATH = Environment.getExternalStorageDirectory() + "/MusicPlayer/";
+    static String MUSIC = "music/";
+    static String PARENT_PATH = "";
+    static String CHILD_PATH = "";
 
     public static void init(Context context){
         mContext = context;
     }
-
     /**
      * 格式化时间，将毫秒转换为分:秒格式
      * @param time
@@ -164,15 +173,50 @@ public class Util {
         return dir;
     }
 
-    //filename是我们的文件全名，包括后缀
-    public static void updateMedia(String filename){
+    public static void writeMusicToDir(final Music music ,final InputStream is,MusicCallBack callBack){
+        CHILD_PATH = music.getTitle() + "-" + music.getArtist() + ".mp3";
+        PARENT_PATH = BASIC_PATH + MUSIC;
+        writeToDir(CHILD_PATH, is, callBack);
+    }
+    /*
+    * 将数据储存到SD卡
+    * */
+    private static void writeToDir(final String fileName ,final InputStream is, final MusicCallBack callBack) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Util.mkdirs(PARENT_PATH);
+                    File file = new File(PARENT_PATH ,fileName);
+                    FileOutputStream fos = new FileOutputStream(file);
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = bis.read(buffer)) != -1) {
+                        fos.write(buffer, 0, len);
+                        fos.flush();
+                    }
+                    fos.close();
+                    bis.close();
+                    is.close();
+                    updateMedia(PARENT_PATH, callBack);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
+            }
+        }).start();
+    }
+
+
+    //filename是我们的文件全名，包括后缀
+    public static void updateMedia(String filename, final MusicCallBack callBack){
         MediaScannerConnection.scanFile(mContext,
                 new String[]{filename}, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
-                        LogTool.i("ExternalStorage", "Scanned " + path + ":");
-                        LogTool.i("ExternalStorage", "-> uri=" + uri);
+                        callBack.onSuccess("scanned finished");
+                        //LogTool.i("ExternalStorage", "Scanned " + path + " uri:" + uri);
                     }
                 });
     }
