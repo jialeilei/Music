@@ -4,20 +4,20 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
+
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.util.Util;
+
 import java.util.List;
 
 /**
- * Created by lei on 2017/9/16.
+ * Created by lei on 2017/9/18.
  */
-public class HomePlaylistAdapter extends CommonAdapter<Music> {
+public class MusiclistAdapter extends CommonAdapter<Music> {
 
-    private static final String TAG = "HomePlaylistAdapter";
-
-    public HomePlaylistAdapter(Context context, List<Music> data, int mItemLayout) {
+    public MusiclistAdapter(Context context, List<Music> data, int mItemLayout) {
         super(context, data, mItemLayout);
     }
 
@@ -25,6 +25,7 @@ public class HomePlaylistAdapter extends CommonAdapter<Music> {
         mData = AppCache.getLocalMusicList();
         this.notifyDataSetChanged();
     }
+
 
     @Override
     public void convert(ViewHolder viewHolder, Music item, int position) {
@@ -47,6 +48,4 @@ public class HomePlaylistAdapter extends CommonAdapter<Music> {
         }
 
     }
-
-
 }

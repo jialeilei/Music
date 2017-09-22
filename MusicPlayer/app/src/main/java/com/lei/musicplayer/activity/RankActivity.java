@@ -100,7 +100,7 @@ public class RankActivity extends BaseActivity implements
      */
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        LogTool.i(TAG," LongClick ");
+        LogTool.i(TAG, " LongClick ");
 
         return false;
     }
@@ -134,18 +134,8 @@ public class RankActivity extends BaseActivity implements
         //image of album
         String albumArt="";
         int musicType;*/
-        Music info = new Music();
-        info.setId(Long.parseLong(mOnlineMusic.getSong_id()));
-        info.setTitle(mOnlineMusic.getTitle());
-        info.setArtist(mOnlineMusic.getArtist_name());
-        info.setDuration(duration);
-        info.setUrl(file_link);
-        info.setLrcLink(mOnlineMusic.getLrclink());
-        info.setAlbum(mOnlineMusic.getAlbum_title());
-        info.setAlbumArt(mOnlineMusic.getPic_small());
-        info.setMusicType(MusicType.online);
-        getPlayService().playStartMusic(info);
 
+        Music info = onLineMusic2Music(mOnlineMusic,file_link,duration);
         HttpClient.download(info, new MusicCallBack() {
             @Override
             public void onSuccess(Object response) {
@@ -172,6 +162,21 @@ public class RankActivity extends BaseActivity implements
         });
 
 
+    }
+
+    private Music onLineMusic2Music(OnlineMusic mOnlineMusic,String file_link,int duration) {
+        Music info = new Music();
+        info.setId(Long.parseLong(mOnlineMusic.getSong_id()));
+        info.setTitle(mOnlineMusic.getTitle());
+        info.setArtist(mOnlineMusic.getArtist_name());
+        info.setDuration(duration);
+        info.setUrl(file_link);
+        info.setLrcLink(mOnlineMusic.getLrclink());
+        info.setAlbum(mOnlineMusic.getAlbum_title());
+        info.setAlbumArt(mOnlineMusic.getPic_small());
+        info.setMusicType(MusicType.online);
+        getPlayService().playStartMusic(info);
+        return info;
     }
 
 

@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.lei.musicplayer.R;
-import com.lei.musicplayer.adapter.HomePagerAdapter;
+import com.lei.musicplayer.adapter.ViewPagerAdapter;
+import com.lei.musicplayer.adapter.HomePlaylistAdapter;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.util.LogTool;
 import java.util.ArrayList;
@@ -21,7 +23,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,V
     LinearLayout rlTitle;
     TextView tvPlayList, tvCollection;
     ViewPager homeViewPager;
-    HomePagerAdapter pagerAdapter;
+    ViewPagerAdapter pagerAdapter;
+    HomePlaylistAdapter playlistAdapter;
+    ListView lvPlaylist;
     List<View> homeViews = new ArrayList<>();
 
 
@@ -40,14 +44,17 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,V
         tvCollection = (TextView) view.findViewById(R.id.tv_collection);
         homeViewPager = (ViewPager) view.findViewById(R.id.vp_home);
         View viewPlaylist = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_playlist, null);
-        View viewCollection = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_collection, null);
+        View viewCollection = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_playlist, null);
+        lvPlaylist = (ListView) viewPlaylist.findViewById(R.id.lv_playlist);
+        playlistAdapter = new HomePlaylistAdapter(getActivity(),AppCache.getMusicPlaylist(),R.layout.item_local_list);
+        lvPlaylist.setAdapter(playlistAdapter);
         if (homeViews.size() > 0){
             homeViews.clear();
             LogTool.i(TAG,"size: " + homeViews.size());
         }
         homeViews.add(viewPlaylist);
         homeViews.add(viewCollection);
-        pagerAdapter = new HomePagerAdapter(homeViews);
+        pagerAdapter = new ViewPagerAdapter(homeViews);
         homeViewPager.setAdapter(pagerAdapter);
         setListener();
     }
@@ -100,6 +107,17 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,V
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    @Override
+    protected void refreshListView() {
+        playlistAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onResume() {
+        LogTool.i(TAG,"onResue");
+        super.onResume();
     }
 
     @Override

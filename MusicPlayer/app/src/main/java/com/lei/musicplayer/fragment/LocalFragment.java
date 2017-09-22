@@ -45,16 +45,11 @@ public class LocalFragment extends BaseFragment implements AdapterView.OnItemCli
         getPlayerService().playStartMusic(AppCache.getLocalMusicList().get(position));
     }
 
-    public void refreshMusicList(){
-        if (isAdded()){
-            refreshListView();
-        }
-    }
 
-    private void refreshListView(){
+    @Override
+    protected void refreshListView() {
         adapter.notifyDataSetChanged();
     }
-
 
     /**
      * Called when the fragment is visible to the user and actively running.

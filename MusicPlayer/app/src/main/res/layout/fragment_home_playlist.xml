@@ -7,7 +7,7 @@
     <TextView
         android:id="@+id/tv_fragment_playlist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/home_playlist_text"
         android:textColor="@color/text_color"/>
@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@null"
-        android:visibility="gone">
+        android:visibility="visible">
     </ListView>
 
 

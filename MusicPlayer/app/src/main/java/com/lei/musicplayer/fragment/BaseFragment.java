@@ -3,7 +3,6 @@ package com.lei.musicplayer.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
-
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.service.PlayerService;
 
@@ -11,7 +10,6 @@ import com.lei.musicplayer.service.PlayerService;
  * Created by lei on 2017/8/25.
  */
 public abstract class BaseFragment extends Fragment {
-
 
     /*
     * 先加载onCreateView，才加载 onViewCreated
@@ -32,5 +30,12 @@ public abstract class BaseFragment extends Fragment {
         return AppCache.getPlayService();
     }
 
+    public void refreshMusicList(){
+        if (isAdded()){
+            refreshListView();
+        }
+    }
+
+    protected abstract void refreshListView();
 
 }

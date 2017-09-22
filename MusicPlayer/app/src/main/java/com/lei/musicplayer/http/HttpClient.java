@@ -82,7 +82,7 @@ public class HttpClient {
     /*
     * 排行音乐
     * */
-    public static void getOnlineMusicList(String type,int size,int offset, final MusicCallBack callBack){
+    public static void getOnlineMusicList(String type,int size,int offset, final MusicCallBack<OnLineMusicList> callBack){
         getApiService().getOnLineMusicList(type, String.valueOf(size), String.valueOf(offset), METHOD_GET_MUSIC_LIST)
                 .enqueue(new Callback<OnLineMusicList>() {
                     @Override

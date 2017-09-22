@@ -52,6 +52,11 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,V
     }
 
     @Override
+    protected void refreshListView() {
+
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
     }

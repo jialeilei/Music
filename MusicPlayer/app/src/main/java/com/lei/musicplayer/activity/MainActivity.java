@@ -295,6 +295,8 @@ public class MainActivity extends BaseActivity
         setBottomMusicInfo();
         img_play.setImageResource(R.mipmap.default_playing);
         localFragment.refreshMusicList();
+        homeFragment.refreshMusicList();
+
     }
 
     @Override
