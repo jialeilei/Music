@@ -1,6 +1,9 @@
 package com.lei.musicplayer.adapter;
 
+
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +17,10 @@ import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.bean.MusicLink;
 import com.lei.musicplayer.bean.OnLineMusicList;
 import com.lei.musicplayer.bean.OnlineMusic;
-import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.http.MusicCallBack;
 import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +39,6 @@ public class RankAdapter extends BaseAdapter {
         mContext = context;
         typePosition = position;
         types = mContext.getResources().getStringArray(R.array.online_music_list_type);
-        LogTool.i(TAG,"RankAdapter " + position);
         OnlineMusic onlineMusic = new OnlineMusic();
         onlineMusic.setArtist_name("native");
         onlineMusic.setTitle("native");
@@ -64,10 +66,7 @@ public class RankAdapter extends BaseAdapter {
         if (convertView == null){
             convertView = LayoutInflater.from(mContext).inflate(R.layout.item_local_list,parent,false);
             holder = new ViewHolder();
-            holder.img = (ImageView) convertView.findViewById(R.id.img_music);
-            holder.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
-            holder.tvAuthor = (TextView) convertView.findViewById(R.id.tv_artist);
-            convertView.setTag(holder);
+            setView(convertView, holder);
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
@@ -76,29 +75,77 @@ public class RankAdapter extends BaseAdapter {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogTool.i(TAG," position: "+position + " " + list.get(position).toString());
+                LogTool.i(TAG, " position: " + position + " " + list.get(position).toString());
                 // TODO: 2017/9/22 进一步获取file_link、duration
-                if (position == 0 && list.get(position).getTitle().equals("native")){
+                if (position == 0 && list.get(position).getTitle().equals("native")) {
                     return;
                 }
                 playMusic(list.get(position));
             }
         });
+
+        convertView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("下载")
+                        .setMessage("是否下载？")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                LogTool.i(TAG, "setNegativeButton");
+                            }
+                        })
+                        .setPositiveButton("下载", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                LogTool.i(TAG, "setPositiveButton");
+                                HttpClient.getMusicLink(list.get(position).getSong_id(), new MusicCallBack<MusicLink>() {
+                                    @Override
+                                    public void onSuccess(MusicLink response) {
+                                        Music music = Util.onLineMusic2Music(list.get(position),
+                                                response.getBitrate().getFile_link(),
+                                                response.getBitrate().getFile_duration());
+                                        downloadMusic(music);
+                                    }
+
+                                    @Override
+                                    public void onFail(Throwable t) {
+
+                                    }
+                                });
+                            }
+                        })
+                        .create();
+                builder.show();
+                return true;
+            }
+        });
+
         return convertView;
+    }
+
+    private void setView(View convertView, ViewHolder holder) {
+        holder.img = (ImageView) convertView.findViewById(R.id.img_music);
+        holder.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
+        holder.tvAuthor = (TextView) convertView.findViewById(R.id.tv_artist);
+        convertView.setTag(holder);
     }
 
     private void playMusic(final OnlineMusic onlineMusic) {
         HttpClient.getMusicLink(onlineMusic.getSong_id(), new MusicCallBack<MusicLink>() {
             @Override
             public void onSuccess(MusicLink response) {
-                LogTool.i(TAG," onSuccess ");
-                onLineMusic2Music(onlineMusic,response.getBitrate().getFile_link(),
+                LogTool.i(TAG, " onSuccess ");
+                Music music = Util.onLineMusic2Music(onlineMusic, response.getBitrate().getFile_link(),
                         response.getBitrate().getFile_duration());
+                AppCache.getPlayService().playStartMusic(music);
             }
 
             @Override
             public void onFail(Throwable t) {
-                LogTool.i(TAG," getMusicLink failed ");
+                LogTool.i(TAG, " getMusicLink failed ");
             }
         });
     }
@@ -138,18 +185,18 @@ public class RankAdapter extends BaseAdapter {
         TextView tvTitle,tvAuthor;
     }
 
-    private Music onLineMusic2Music(OnlineMusic mOnlineMusic,String file_link,int duration) {
-        Music info = new Music();
-        info.setId(Long.parseLong(mOnlineMusic.getSong_id()));
-        info.setTitle(mOnlineMusic.getTitle());
-        info.setArtist(mOnlineMusic.getArtist_name());
-        info.setDuration(duration);
-        info.setUrl(file_link);
-        info.setLrcLink(mOnlineMusic.getLrclink());
-        info.setAlbum(mOnlineMusic.getAlbum_title());
-        info.setAlbumArt(mOnlineMusic.getPic_small());
-        info.setMusicType(MusicType.online);
-        AppCache.getPlayService().playStartMusic(info);
-        return info;
+    private void downloadMusic(Music music){
+        HttpClient.download(music, new MusicCallBack() {
+            @Override
+            public void onSuccess(Object response) {
+                Util.ToastShort("下载完成");
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                Util.ToastShort("下载失败，请重新下载");
+            }
+        });
     }
+
 }

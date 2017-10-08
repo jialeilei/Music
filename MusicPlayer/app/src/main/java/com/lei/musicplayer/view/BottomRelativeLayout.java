@@ -7,7 +7,7 @@ import android.widget.RelativeLayout;
 
 /**
  * Created by lei on 2017/9/12.
- * 拦截事件，防止事件继续向下传递
+ * 拦截事件，防止点击到下面的 listView
  */
 public class BottomRelativeLayout extends RelativeLayout {
 
@@ -44,4 +44,5 @@ public class BottomRelativeLayout extends RelativeLayout {
     public boolean onTouchEvent(MotionEvent event) {
         return true;
     }
+
 }

@@ -1,6 +1,9 @@
 package com.lei.musicplayer.application;
 
 import android.app.Application;
+
+import com.lei.musicplayer.database.DatabaseClient;
+import com.lei.musicplayer.database.DbHelper;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
@@ -18,9 +21,8 @@ public class MusicApplication extends Application {
 
         AppCache.init(this);
         Util.init(this);
-        LogTool.i(TAG, "before " + System.currentTimeMillis());
         HttpClient.init();
-        LogTool.i(TAG, "after " + System.currentTimeMillis());
+        DatabaseClient.init(this);
 
     }
 }

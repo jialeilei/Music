@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({
         MusicType.local,
         MusicType.online,
-        MusicType.unknow
+        //MusicType.unknow
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface MusicType {
@@ -19,6 +19,6 @@ public @interface MusicType {
 
     int online = 2;
 
-    int unknow = 3;
+    //int unknow = 3;
 
 }

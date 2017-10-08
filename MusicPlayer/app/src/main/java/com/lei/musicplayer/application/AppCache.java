@@ -63,9 +63,6 @@ public class AppCache {
     }
 
     public static List<Music> getMusicPlaylist(){
-//        if (musicPlayList == null){
-//            musicPlayList = new ArrayList<Music>();
-//        }
         return getInstance().localMusicList;
     }
 

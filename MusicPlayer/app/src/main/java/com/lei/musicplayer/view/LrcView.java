@@ -20,9 +20,10 @@ public class LrcView extends TextView {
     private float height;       //歌词视图高度
     private Paint currentPaint; //当前画笔对象
     private Paint notCurrentPaint;  //非当前画笔对象
-    private float textHeight = 25;  //文本高度
-    private float textSize = 18;        //文本大小
+    private float textHeight = 60;  //文本高度
+    private float textSize = 36;        //文本大小
     private int index = 0;      //list集合下标
+    private List<LrcContent> mLrcList = new ArrayList<LrcContent>();
 
 
     public LrcView(Context context) {
@@ -40,10 +41,7 @@ public class LrcView extends TextView {
         init();
     }
 
-
-    private List<LrcContent> mLrcList = new ArrayList<LrcContent>();
-
-    public void setmLrcList(List<LrcContent> mLrcList) {
+    public void setLrcList(List<LrcContent> mLrcList) {
         this.mLrcList = mLrcList;
     }
 
@@ -74,7 +72,7 @@ public class LrcView extends TextView {
         currentPaint.setColor(Color.argb(210, 251, 248, 29));
         notCurrentPaint.setColor(Color.argb(140, 255, 255, 255));
 
-        currentPaint.setTextSize(24);
+        currentPaint.setTextSize(textSize);
         currentPaint.setTypeface(Typeface.SERIF);
 
         notCurrentPaint.setTextSize(textSize);
@@ -87,6 +85,9 @@ public class LrcView extends TextView {
             float tempY = height / 2;
             //画出本句之前的句子
             for(int i = index - 1; i >= 0; i--) {
+                if (tempY < 0){
+                    break;
+                }
                 //向上推移
                 tempY = tempY - textHeight;
                 canvas.drawText(mLrcList.get(i).getLrcStr(), width / 2, tempY, notCurrentPaint);
@@ -94,12 +95,15 @@ public class LrcView extends TextView {
             tempY = height / 2;
             //画出本句之后的句子
             for(int i = index + 1; i < mLrcList.size(); i++) {
+                if (tempY > height - textHeight){
+                    break;
+                }
                 //往下推移
                 tempY = tempY + textHeight;
                 canvas.drawText(mLrcList.get(i).getLrcStr(), width / 2, tempY, notCurrentPaint);
             }
         } catch (Exception e) {
-            setText("...木有歌词文件，赶紧去下载...");
+            canvas.drawText("...木有歌词文件，赶紧去下载...", width / 2, height / 2, notCurrentPaint);
         }
     }
 
@@ -115,6 +119,7 @@ public class LrcView extends TextView {
 
     public void setIndex(int index) {
         this.index = index;
+        this.invalidate();
     }
 
 }

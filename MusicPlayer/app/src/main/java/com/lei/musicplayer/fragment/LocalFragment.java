@@ -42,7 +42,8 @@ public class LocalFragment extends BaseFragment implements AdapterView.OnItemCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        getPlayerService().playStartMusic(AppCache.getLocalMusicList().get(position));
+        //getPlayerService().playStartMusic(AppCache.getLocalMusicList().get(position));
+        getPlayerService().play(AppCache.getLocalMusicList(),position);
     }
 
 

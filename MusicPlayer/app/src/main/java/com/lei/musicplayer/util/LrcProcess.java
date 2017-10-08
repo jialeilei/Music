@@ -33,7 +33,8 @@ public class LrcProcess {
     public String readLRC(String path) {
         //定义一个StringBuilder对象，用来存放歌词内容
         StringBuilder stringBuilder = new StringBuilder();
-        File f = new File(path.replace(".mp3", ".lrc"));
+        //File f = new File(path.replace(".mp3", ".lrc"));
+        File f = new File(path);
 
         try {
             //创建一个文件输入流对象

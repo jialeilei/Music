@@ -7,6 +7,7 @@ import android.view.View;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.Music;
+import com.lei.musicplayer.database.DatabaseClient;
 import com.lei.musicplayer.util.Util;
 import java.util.List;
 
@@ -22,12 +23,12 @@ public class HomePlaylistAdapter extends CommonAdapter<Music> {
     }
 
     public void refreshData(){
-        mData = AppCache.getLocalMusicList();
+        mData = DatabaseClient.getMusic();
         this.notifyDataSetChanged();
     }
 
     @Override
-    public void convert(ViewHolder viewHolder, Music item, int position) {
+    public void convert(ViewHolder viewHolder, final Music item, final int position) {
 
         viewHolder.setText(R.id.tv_title, item.getTitle());
         viewHolder.setText(R.id.tv_artist, item.getArtist());
@@ -45,6 +46,14 @@ public class HomePlaylistAdapter extends CommonAdapter<Music> {
         }else {
             viewHolder.getView(R.id.tv_playing).setVisibility(View.INVISIBLE);
         }
+
+        viewHolder.getConvertView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //AppCache.getPlayService().playStartMusic(item);
+                AppCache.getPlayService().play(mData,position);
+            }
+        });
 
     }
 

@@ -6,11 +6,18 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
+
+import com.lei.musicplayer.R;
+import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
+import com.lei.musicplayer.bean.OnlineMusic;
 import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.http.MusicCallBack;
+import com.lei.musicplayer.view.LrcView;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,6 +37,7 @@ public class Util {
     //储存路径
     static String BASIC_PATH = Environment.getExternalStorageDirectory() + "/MusicPlayer/";
     static String MUSIC = "music/";
+    static String LRC = "lrc/";
     static String PARENT_PATH = "";
     static String CHILD_PATH = "";
 
@@ -173,6 +181,11 @@ public class Util {
         return dir;
     }
 
+    public static void writeLrcToDir(Music music, InputStream stream, MusicCallBack callBack) {
+        CHILD_PATH = music.getTitle() + "-" + music.getArtist() + ".lrc";
+        PARENT_PATH = BASIC_PATH + LRC;
+        writeToDir(CHILD_PATH, stream, callBack);
+    }
     public static void writeMusicToDir(final Music music ,final InputStream is,MusicCallBack callBack){
         CHILD_PATH = music.getTitle() + "-" + music.getArtist() + ".mp3";
         PARENT_PATH = BASIC_PATH + MUSIC;
@@ -227,5 +240,73 @@ public class Util {
     public static void ToastShort(String msg){
         Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
     }
+
+    public static Music onLineMusic2Music(OnlineMusic mOnlineMusic,String file_link,int duration) {
+        Music info = onLineMusicToMusic(mOnlineMusic);
+        info.setDuration(duration);
+        info.setUrl(file_link);
+        return info;
+    }
+
+    public static Music onLineMusicToMusic(OnlineMusic mOnlineMusic) {
+        Music info = new Music();
+        info.setId(Long.parseLong(mOnlineMusic.getSong_id()));
+        info.setTitle(mOnlineMusic.getTitle());
+        info.setArtist(mOnlineMusic.getArtist_name());
+        info.setLrcLink(mOnlineMusic.getLrclink());
+        info.setAlbum(mOnlineMusic.getAlbum_title());
+        info.setAlbumArt(mOnlineMusic.getPic_small());
+        info.setMusicType(MusicType.online);
+        return info;
+    }
+
+    /*
+   * 初始化歌词类
+   * */
+    public static List<LrcContent> initLrc(Music music){
+
+        List<LrcContent> lrcList = new ArrayList<>();
+        LrcProcess lrcProcess = new LrcProcess();
+        //读取歌词文件
+        lrcProcess.readLRC(Environment.getExternalStorageDirectory() + "/MusicPlayer/lrc/"
+                + music.getTitle() + "-"
+                + music.getArtist() + ".lrc");
+        //传回处理后的歌词文件
+        lrcList = lrcProcess.getLrcList();
+        if (lrcList == null || lrcList.size() == 0){return null;}
+
+//        lrcView.setmLrcList(lrcList);
+//        lrcView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.lrc_slide_up));
+        //handler.post(mRunnable);
+
+        return lrcList;
+    }
+
+    /**
+     * 根据时间获取歌词显示的索引值
+     * @return
+     */
+    public static int lrcIndex(int currentTime,long duration,List<LrcContent> lrcList) {
+        int index = 0;
+        if(currentTime < duration) {
+            for (int i = 0; i < lrcList.size(); i++) {
+                if (i < lrcList.size() - 1) {
+                    if (currentTime < lrcList.get(i).getLrcTime() && i == 0) {
+                        index = i;
+                    }
+                    if (currentTime > lrcList.get(i).getLrcTime()
+                            && currentTime < lrcList.get(i + 1).getLrcTime()) {
+                        index = i;
+                    }
+                }
+                if (i == lrcList.size() - 1
+                        && currentTime > lrcList.get(i).getLrcTime()) {
+                    index = i;
+                }
+            }
+        }
+        return index;
+    }
+
 
 }

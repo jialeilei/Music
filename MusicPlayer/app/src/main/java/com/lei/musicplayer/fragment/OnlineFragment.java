@@ -47,7 +47,6 @@ public class OnlineFragment extends BaseFragment implements TabLayout.OnTabSelec
         for (int i = 0; i < types.length; i++) {
             ListView listView = new ListView(getActivity());
             RankAdapter adapter = new RankAdapter(getActivity(),i);
-            //listView.setAdapter(new LocalListAdapter(getActivity(), AppCache.getLocalMusicList(),R.layout.item_local_list));
             listView.setAdapter(adapter);
             viewList.add(listView);
         }

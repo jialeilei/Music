@@ -1,24 +1,9 @@
 package com.lei.musicplayer.http;
 
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.bean.MusicLink;
 import com.lei.musicplayer.bean.OnLineMusicList;
-import com.lei.musicplayer.bean.OnlineMusic;
-import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -52,9 +37,8 @@ public class HttpClient {
     private static final String TAG = "HttpClient";
     //成都 http://yinyueshiting.baidu.com/data2/music/239908cd71a27d737fef95b17d18b97c/540728460/540728460.mp3?xcode=77de0da9c76a222085429371225e2601
 
-
     static Retrofit retrofit;
-    static OkHttpClient httpClient = new OkHttpClient();
+    static OkHttpClient httpClient;
 
     private static Retrofit initRetrofit(){
         init();
@@ -75,7 +59,7 @@ public class HttpClient {
         }
     }
 
-    public static ApiService getApiService(){
+    private static ApiService getApiService(){
         return initRetrofit().create(ApiService.class);
     }
 
@@ -126,7 +110,7 @@ public class HttpClient {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    Util.writeMusicToDir(music,response.body().byteStream(),callBack);
+                    Util.writeMusicToDir(music, response.body().byteStream(), callBack);
                     //callBack.onSuccess("length: " + response.body().contentLength());
                     Util.ToastShort("下载完成");
                 }
@@ -137,8 +121,40 @@ public class HttpClient {
                 callBack.onFail(t);
             }
         });
+
+        getApiService().download(music.getLrcLink()).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Util.writeLrcToDir(music, response.body().byteStream(), callBack);
+                    Util.ToastShort("歌词下载完成");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                callBack.onFail(t);
+            }
+        });
     }
 
+    public static void downloadLrc(final Music music, final MusicCallBack callBack){
+        Util.ToastShort("正在下载");
+        getApiService().download(music.getLrcLink()).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Util.writeLrcToDir(music, response.body().byteStream(), callBack);
+                    Util.ToastShort("歌词下载完成");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                callBack.onFail(t);
+            }
+        });
+    }
 
 
 }

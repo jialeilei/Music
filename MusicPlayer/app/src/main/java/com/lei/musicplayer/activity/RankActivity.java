@@ -20,6 +20,8 @@ import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.http.MusicCallBack;
 import com.lei.musicplayer.service.ScanCallBack;
 import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.Util;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -135,7 +137,7 @@ public class RankActivity extends BaseActivity implements
         String albumArt="";
         int musicType;*/
 
-        Music info = onLineMusic2Music(mOnlineMusic,file_link,duration);
+        Music info = Util.onLineMusic2Music(mOnlineMusic,file_link,duration);
         HttpClient.download(info, new MusicCallBack() {
             @Override
             public void onSuccess(Object response) {
@@ -158,25 +160,7 @@ public class RankActivity extends BaseActivity implements
             public void onFail(Throwable t) {
                 LogTool.i(TAG, "download onFail " + t);
             }
-
         });
-
-
-    }
-
-    private Music onLineMusic2Music(OnlineMusic mOnlineMusic,String file_link,int duration) {
-        Music info = new Music();
-        info.setId(Long.parseLong(mOnlineMusic.getSong_id()));
-        info.setTitle(mOnlineMusic.getTitle());
-        info.setArtist(mOnlineMusic.getArtist_name());
-        info.setDuration(duration);
-        info.setUrl(file_link);
-        info.setLrcLink(mOnlineMusic.getLrclink());
-        info.setAlbum(mOnlineMusic.getAlbum_title());
-        info.setAlbumArt(mOnlineMusic.getPic_small());
-        info.setMusicType(MusicType.online);
-        getPlayService().playStartMusic(info);
-        return info;
     }
 
 

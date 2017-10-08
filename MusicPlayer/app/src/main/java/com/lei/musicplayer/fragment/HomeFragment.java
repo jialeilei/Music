@@ -2,32 +2,35 @@ package com.lei.musicplayer.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.ViewPagerAdapter;
 import com.lei.musicplayer.adapter.HomePlaylistAdapter;
 import com.lei.musicplayer.application.AppCache;
+import com.lei.musicplayer.bean.Music;
+import com.lei.musicplayer.database.DatabaseClient;
 import com.lei.musicplayer.util.LogTool;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends BaseFragment implements View.OnClickListener,ViewPager.OnPageChangeListener{
+public class HomeFragment extends BaseFragment implements View.OnClickListener,
+        ViewPager.OnPageChangeListener,TabLayout.OnTabSelectedListener{
 
     private static final String TAG = "HomeFragment";
-    LinearLayout rlTitle;
-    TextView tvPlayList, tvCollection;
+    private TabLayout tbHome;
+    //LinearLayout rlTitle;
+    //TextView tvPlayList, tvCollection;
     ViewPager homeViewPager;
     ViewPagerAdapter pagerAdapter;
-    HomePlaylistAdapter playlistAdapter;
+    public static HomePlaylistAdapter playlistAdapter;
     ListView lvPlaylist;
     List<View> homeViews = new ArrayList<>();
-
+    List<Music> playlist;
 
     @Nullable
     @Override
@@ -38,15 +41,17 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,V
 
     @Override
     protected void initView(View view) {
-        rlTitle = (LinearLayout) view.findViewById(R.id.rl_title);
-        rlTitle.setPadding(0, AppCache.getSystemStatusHeight() * 2 + 45, 0, 0);
-        tvPlayList = (TextView) view.findViewById(R.id.tv_playlist);
-        tvCollection = (TextView) view.findViewById(R.id.tv_collection);
+
         homeViewPager = (ViewPager) view.findViewById(R.id.vp_home);
         View viewPlaylist = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_playlist, null);
         View viewCollection = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home_playlist, null);
         lvPlaylist = (ListView) viewPlaylist.findViewById(R.id.lv_playlist);
-        playlistAdapter = new HomePlaylistAdapter(getActivity(),AppCache.getMusicPlaylist(),R.layout.item_local_list);
+        //playlist
+        playlist = DatabaseClient.getMusic();
+        for (int i = 0; i < playlist.size(); i++) {
+            LogTool.i(TAG,"position: "+i+" musicId: "+playlist.get(i).getId());
+        }
+        playlistAdapter = new HomePlaylistAdapter(getActivity(),playlist,R.layout.item_local_list);
         lvPlaylist.setAdapter(playlistAdapter);
         if (homeViews.size() > 0){
             homeViews.clear();
@@ -54,26 +59,48 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,V
         }
         homeViews.add(viewPlaylist);
         homeViews.add(viewCollection);
+
         pagerAdapter = new ViewPagerAdapter(homeViews);
         homeViewPager.setAdapter(pagerAdapter);
-        setListener();
+        homeViewPager.setOnPageChangeListener(this);
+
+        //tabLayout
+        tbHome = (TabLayout) view.findViewById(R.id.tab_layout_home);
+        tbHome.setPadding(0, AppCache.getSystemStatusHeight() * 2 + 45, 0, 0);
+        tbHome.setOnTabSelectedListener(this);
+        tbHome.setupWithViewPager(homeViewPager);
+        if (tbHome.getTabCount() > 0){
+            tbHome.removeAllTabs();
+        }
+        String[] titles = {getResources().getString(R.string.home_playlist),
+                getResources().getString(R.string.home_collection)};
+        for (int i = 0; i < titles.length; i++) {
+            LogTool.i(TAG,"titles: " + titles[i]);
+            tbHome.addTab(tbHome.newTab().setText(titles[i]));
+        }
+
     }
 
-    private void setListener() {
-        tvPlayList.setOnClickListener(this);
-        tvCollection.setOnClickListener(this);
-        homeViewPager.setOnPageChangeListener(this);
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.tv_playlist:
-                setTitleStatus(0);
-                break;
-            case R.id.tv_collection:
-                setTitleStatus(1);
-                break;
+
         }
     }
 
@@ -81,12 +108,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,V
         homeViewPager.setCurrentItem(i);
         switch (i){
             case 0:
-                tvPlayList.setTextColor(getResources().getColor(R.color.colorPrimary));
-                tvCollection.setTextColor(getResources().getColor(R.color.text_color));
+
                 break;
             case 1:
-                tvPlayList.setTextColor(getResources().getColor(R.color.text_color));
-                tvCollection.setTextColor(getResources().getColor(R.color.colorPrimary));
+
                 break;
             default:
 
@@ -111,7 +136,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,V
 
     @Override
     protected void refreshListView() {
-        playlistAdapter.notifyDataSetChanged();
+        playlistAdapter.refreshData();
     }
 
     @Override

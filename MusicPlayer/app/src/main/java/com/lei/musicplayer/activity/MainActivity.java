@@ -27,13 +27,13 @@ import com.lei.musicplayer.fragment.LocalFragment;
 import com.lei.musicplayer.fragment.OnlineFragment;
 import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.service.PlayerService;
-import com.lei.musicplayer.service.OnPlayerServiceListener;
+import com.lei.musicplayer.service.OnPlayMusicListener;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener ,ViewPager.OnPageChangeListener,
-        SeekBar.OnSeekBarChangeListener,View.OnClickListener,OnPlayerServiceListener {
+        SeekBar.OnSeekBarChangeListener,View.OnClickListener,OnPlayMusicListener {
 
     private static final String TAG = "MainActivity";
     DrawerLayout drawer;
@@ -42,7 +42,8 @@ public class MainActivity extends BaseActivity
     //view
     public static LocalFragment localFragment;
     OnlineFragment onlineFragment;
-    public HomeFragment homeFragment;
+    private HomeFragment homeFragment;
+    private PlayFragment playFragment;
     ImageButton img_next, img_play, img_category;
     ImageView img_bottom;
     TextView tvMusicName,tvMusicAuthor,tvMusicDuration;
@@ -81,7 +82,6 @@ public class MainActivity extends BaseActivity
         viewPager.setCurrentItem(0);
         img_category = (ImageButton) findViewById(R.id.img_category);
         img_category.setOnClickListener(this);
-
         //bottom play
         img_play = (ImageButton) findViewById(R.id.img_play);
         img_next = (ImageButton) findViewById(R.id.img_next);
@@ -91,6 +91,7 @@ public class MainActivity extends BaseActivity
         tvMusicDuration = (TextView) findViewById(R.id.tv_music_duration);
         mSeekBarCurrent = (SeekBar) findViewById(R.id.seek_bar_current);
         setBottomMusicInfo();
+
     }
 
     private void setBottomMusicInfo() {
@@ -183,8 +184,10 @@ public class MainActivity extends BaseActivity
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()){
                 case AppConstant.ACTION_STATE:
+
                     break;
                 case AppConstant.ACTION_PROGRESS:
+
                     break;
             }
         }
@@ -195,7 +198,7 @@ public class MainActivity extends BaseActivity
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.img_next:
-                sendPlayInfo(AppConstant.ACTION__NEXT, false);
+                //sendPlayInfo(AppConstant.ACTION__NEXT, false);
                 getPlayService().playNext();
                 break;
             case R.id.img_play:
@@ -227,7 +230,7 @@ public class MainActivity extends BaseActivity
     }
 
 
-    private PlayFragment playFragment;
+
 
 
     private void showPlayFragment() {
@@ -283,6 +286,10 @@ public class MainActivity extends BaseActivity
         int progress = play_progress * 100 / (int) AppCache.getPlayingMusic().getDuration();
         mSeekBarCurrent.setProgress(progress);
         tvMusicDuration.setText("" + Util.formatTime(play_progress));
+        if (playFragment != null){
+            playFragment.updateProgress(currentPosition);
+        }
+        LogTool.i(TAG,"currentPosition: "+currentPosition);
     }
 
     @Override
@@ -296,7 +303,14 @@ public class MainActivity extends BaseActivity
         img_play.setImageResource(R.mipmap.default_playing);
         localFragment.refreshMusicList();
         homeFragment.refreshMusicList();
+    }
 
+    @Override
+    public void onMusicChange() {
+        if (playFragment == null){
+            playFragment = new PlayFragment();
+        }
+        playFragment.setLrc();
     }
 
     @Override

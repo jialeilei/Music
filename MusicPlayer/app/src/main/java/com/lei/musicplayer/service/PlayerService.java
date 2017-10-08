@@ -8,11 +8,13 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.view.animation.AnimationUtils;
-import com.lei.musicplayer.constant.AppConstant;
+
 import com.lei.musicplayer.R;
+import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
+import com.lei.musicplayer.database.DatabaseClient;
 import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.LrcProcess;
@@ -31,8 +33,8 @@ public class PlayerService extends Service {
     //private String path;
     private int play_progress = 0;//the current progress of one music
     public int play_position = 0;//the current position of music in list
-    private List<Music> mLocalMusicList = new ArrayList<Music>();
-    private OnPlayerServiceListener mPlayerServiceListener;
+    private List<Music> musicList = new ArrayList<Music>();
+    private OnPlayMusicListener mPlayerServiceListener;
 
     //歌词
     LrcProcess lrcProcess = new LrcProcess();
@@ -46,7 +48,7 @@ public class PlayerService extends Service {
                     if(mediaPlayer != null) {
                         play_progress = mediaPlayer.getCurrentPosition(); // 获取当前音乐播放的位置
                         mPlayerServiceListener.onMusicCurrentPosition(play_progress);
-                        handler.sendEmptyMessageDelayed(1, 1000);
+                        handler.sendEmptyMessageDelayed(1, 500);
                     }
                     break;
                 case 2:
@@ -82,74 +84,9 @@ public class PlayerService extends Service {
                     break;
             }
         }
-
         return super.onStartCommand(intent, flags, startId);
     }
 
-    /*
-    * 初始化歌词类
-    * */
-    private void initLrc(){
-
-        lrcProcess = new LrcProcess();
-        //读取歌词文件
-        lrcProcess.readLRC(Environment.getExternalStorageDirectory()
-                +"/"+mLocalMusicList.get(play_position).getTitle());
-        LogTool.i(TAG,"directory: "+ Environment.getExternalStorageDirectory()
-                +"/"+mLocalMusicList.get(play_position).getTitle()
-                +" uri: " + mLocalMusicList.get(play_position).getUrl());
-        //传回处理后的歌词文件
-        lrcList = lrcProcess.getLrcList();
-        if (lrcList == null || lrcList.size() == 0){return;}
-        LogTool.i(TAG,"lrcList.size: "+lrcList.size());
-        PlayFragment.lrcView.setmLrcList(lrcList);
-        //切换带动画显示歌词
-        PlayFragment.lrcView.setAnimation(AnimationUtils.loadAnimation(PlayerService.this, R.anim.lrc_slide_up));
-        handler.post(mRunnable);
-
-    }
-
-    Runnable mRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            PlayFragment.lrcView.setIndex(lrcIndex());
-            PlayFragment.lrcView.invalidate();
-            handler.postDelayed(mRunnable, 100);
-        }
-    };
-
-    /**
-     * 根据时间获取歌词显示的索引值
-     * @return
-     */
-    public int lrcIndex() {
-        int currentTime = play_position;
-        int duration = mediaPlayer.getDuration();
-
-        if(mediaPlayer.isPlaying()) {
-            currentTime = mediaPlayer.getCurrentPosition();
-            duration = mediaPlayer.getDuration();
-        }
-        if(currentTime < duration) {
-            for (int i = 0; i < lrcList.size(); i++) {
-                if (i < lrcList.size() - 1) {
-                    if (currentTime < lrcList.get(i).getLrcTime() && i == 0) {
-                        index = i;
-                    }
-                    if (currentTime > lrcList.get(i).getLrcTime()
-                            && currentTime < lrcList.get(i + 1).getLrcTime()) {
-                        index = i;
-                    }
-                }
-                if (i == lrcList.size() - 1
-                        && currentTime > lrcList.get(i).getLrcTime()) {
-                    index = i;
-                }
-            }
-        }
-        return index;
-    }
 
     private void playOrStop(int getPlayPosition) {
         if (getPlayPosition > -1){//listView列表点击歌曲，直接0进度开始播放歌曲
@@ -171,16 +108,12 @@ public class PlayerService extends Service {
     }
 
     public void play(){
-        play(mLocalMusicList.get(play_position));
+        play(musicList.get(play_position));
     }
 
     public void play(int position){
         play_position = position;
     }
-
-    /*
-    * 开始停止点击进入
-    * */
 
     /*
     * 列表点击进入
@@ -189,7 +122,15 @@ public class PlayerService extends Service {
         play_progress = 0;
         play(music);
     }
-
+    /*
+    * 播放列表点击进入，方便循环播放
+    * */
+    public void play(List<Music> list,int position){
+        play_position = position;
+        play_progress = 0;
+        musicList = list;
+        play(musicList.get(position));
+    }
 
     private void play(Music music) {
         mediaPlayer.reset();
@@ -204,6 +145,7 @@ public class PlayerService extends Service {
                     if (play_progress > 0) {
                         mediaPlayer.seekTo(play_progress);
                     }
+
                 }
             });
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -214,9 +156,10 @@ public class PlayerService extends Service {
             });
 
             AppCache.setPlayingMusic(music);
+            mPlayerServiceListener.onMusicChange();
             mPlayerServiceListener.onMusicPlay();
+            DatabaseClient.addMusic(music);
             handler.sendEmptyMessage(1);
-            initLrc();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -227,7 +170,7 @@ public class PlayerService extends Service {
     private void playPrevious() {
         play_progress = 0;
         if (play_position == 0){
-            play_position = mLocalMusicList.size() - 1;
+            play_position = musicList.size() - 1;
         }else {
             play_position --;
         }
@@ -236,7 +179,7 @@ public class PlayerService extends Service {
 
     public void playNext() {
         play_progress = 0;
-        if (play_position == mLocalMusicList.size() - 1){
+        if (play_position == musicList.size() - 1){
             play_position = 0;
         }else {
             play_position ++;
@@ -267,6 +210,7 @@ public class PlayerService extends Service {
             mediaPlayer.stop();
             mPlayerServiceListener.onMusicComplete();
             stopHandlerLoop();
+            playNext();
         }
     }
 
@@ -285,9 +229,9 @@ public class PlayerService extends Service {
     * 扫描本地音乐
     * */
     public void scanLocalMusic(ScanCallBack callBack){
-        mLocalMusicList = Util.getLocalMusic();
-        if (mLocalMusicList != null ){
-            AppCache.setLocalMusicList(mLocalMusicList);
+        musicList = Util.getLocalMusic();
+        if (musicList != null ){
+            AppCache.setLocalMusicList(musicList);
             callBack.onFinish();
         }else {
             callBack.onFail("localMusicList is null");
@@ -295,7 +239,7 @@ public class PlayerService extends Service {
     }
 
 
-    public void setOnPlayerListener(OnPlayerServiceListener listener){
+    public void setOnPlayerListener(OnPlayMusicListener listener){
         mPlayerServiceListener = listener;
     }
 

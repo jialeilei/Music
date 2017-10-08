@@ -3,13 +3,15 @@ package com.lei.musicplayer.service;
 /**
  * Created by lei on 2017/8/31.
  */
-public interface OnPlayerServiceListener {
+public interface OnPlayMusicListener {
+
+    void onMusicChange();
+
+    void onMusicPlay();
 
     void onMusicCurrentPosition(int currentPosition);
 
     void onMusicStop();
-
-    void onMusicPlay();
 
     void onMusicComplete();
 
