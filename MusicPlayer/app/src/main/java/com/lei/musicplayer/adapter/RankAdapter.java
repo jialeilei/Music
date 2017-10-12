@@ -67,11 +67,17 @@ public class RankAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.item_local_list,parent,false);
             holder = new ViewHolder();
             setView(convertView, holder);
+
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
-        setInfo(holder,position);
+        setInfo(holder, position);
+        setClickListener(convertView, position);
 
+        return convertView;
+    }
+
+    private void setClickListener(View convertView,final int position) {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,8 +128,6 @@ public class RankAdapter extends BaseAdapter {
                 return true;
             }
         });
-
-        return convertView;
     }
 
     private void setView(View convertView, ViewHolder holder) {
@@ -137,9 +141,8 @@ public class RankAdapter extends BaseAdapter {
         HttpClient.getMusicLink(onlineMusic.getSong_id(), new MusicCallBack<MusicLink>() {
             @Override
             public void onSuccess(MusicLink response) {
-                LogTool.i(TAG, " onSuccess ");
                 Music music = Util.onLineMusic2Music(onlineMusic, response.getBitrate().getFile_link(),
-                        response.getBitrate().getFile_duration());
+                        response.getBitrate().getFile_duration()*1000);
                 AppCache.getPlayService().playStartMusic(music);
             }
 
@@ -154,7 +157,6 @@ public class RankAdapter extends BaseAdapter {
         if (list.size() <= 1){
             holder.tvTitle.setText("loading");
             holder.tvAuthor.setText("loading");
-            LogTool.i(TAG,"begin HttpClient.getOnlineMusicList ");
             HttpClient.getOnlineMusicList(types[typePosition], 30, 0, new MusicCallBack<OnLineMusicList>() {
                 @Override
                 public void onSuccess(OnLineMusicList response) {
@@ -174,7 +176,6 @@ public class RankAdapter extends BaseAdapter {
     }
 
     private void setData(final ViewHolder holder, final OnlineMusic music) {
-        LogTool.i(TAG, "set data ");
         holder.tvTitle.setText(music.getTitle());
         holder.tvAuthor.setText(music.getArtist_name());
         Glide.with(mContext).load(music.getPic_small()).placeholder(R.mipmap.default_music).into(holder.img);

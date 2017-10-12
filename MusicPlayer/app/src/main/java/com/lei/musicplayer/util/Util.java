@@ -6,18 +6,13 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.view.animation.AnimationUtils;
 import android.widget.Toast;
-
-import com.lei.musicplayer.R;
 import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.bean.OnlineMusic;
 import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.http.MusicCallBack;
-import com.lei.musicplayer.view.LrcView;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;

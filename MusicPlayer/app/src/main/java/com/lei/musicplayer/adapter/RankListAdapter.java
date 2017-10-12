@@ -6,7 +6,6 @@ import com.bumptech.glide.Glide;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.bean.OnlineMusic;
 import com.lei.musicplayer.util.LogTool;
-
 import java.util.List;
 
 /**

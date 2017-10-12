@@ -84,7 +84,6 @@ public class RankActivity extends BaseActivity implements
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         LogTool.i(TAG,"position "+position);
         mOnlineMusic = mOnlineMusicList.get(position);
-        getMusicLink(mOnlineMusic.getSong_id());
     }
 
     /**
@@ -107,61 +106,10 @@ public class RankActivity extends BaseActivity implements
         return false;
     }
 
-    private void getMusicLink(String songId) {
-        HttpClient.getMusicLink(songId, new MusicCallBack<MusicLink>() {
-            @Override
-            public void onSuccess(MusicLink response) {
-                LogTool.i(TAG, "Success link; " + response.getBitrate().getFile_link());
-                playOnlineMusic(response.getBitrate().getFile_link(),response.getBitrate().getFile_duration()*1000);
-            }
 
-            @Override
-            public void onFail(Throwable t) {
-                LogTool.i(TAG, "onFail " + t);
-            }
-        });
-    }
 
     OnlineMusic mOnlineMusic;
-    private void playOnlineMusic(String file_link,int duration) {
-       /* long id;
-        String title;
-        String artist;
-        long duration;
-        long size;
-        String url;
-        String lrc
-        String album;
-        String albumKey;
-        //image of album
-        String albumArt="";
-        int musicType;*/
 
-        Music info = Util.onLineMusic2Music(mOnlineMusic,file_link,duration);
-        HttpClient.download(info, new MusicCallBack() {
-            @Override
-            public void onSuccess(Object response) {
-                LogTool.i(TAG, "onSuccess " + response.toString());
-                getPlayService().scanLocalMusic(new ScanCallBack() {
-                    @Override
-                    public void onFail(String msg) {
-
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        LogTool.i(TAG, "LocalFragment.adapter.notifyDataSetChanged() ");
-                        MainActivity.localFragment.adapter.refreshData();
-                    }
-                });
-            }
-
-            @Override
-            public void onFail(Throwable t) {
-                LogTool.i(TAG, "download onFail " + t);
-            }
-        });
-    }
 
 
     public void getInfo() {

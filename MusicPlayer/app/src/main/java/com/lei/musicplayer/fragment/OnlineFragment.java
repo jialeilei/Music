@@ -9,11 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import com.lei.musicplayer.R;
-import com.lei.musicplayer.adapter.LocalListAdapter;
 import com.lei.musicplayer.adapter.RankAdapter;
 import com.lei.musicplayer.adapter.ViewPagerAdapter;
 import com.lei.musicplayer.application.AppCache;
-import com.lei.musicplayer.util.LogTool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +21,10 @@ import java.util.List;
 public class OnlineFragment extends BaseFragment implements TabLayout.OnTabSelectedListener,ViewPager.OnPageChangeListener{
 
     private static final String TAG = "OnlineFragment";
-    ViewPager vpOnline;
-    TabLayout tbOnline;
-    ViewPagerAdapter viewPagerAdapter;
-    List<View> viewList = new ArrayList<>();
+    private ViewPager vpOnline;
+    private TabLayout tbOnline;
+    private ViewPagerAdapter viewPagerAdapter;
+    private List<View> viewList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -41,7 +39,6 @@ public class OnlineFragment extends BaseFragment implements TabLayout.OnTabSelec
         String[] types = getResources().getStringArray(R.array.online_music_list_type);
         vpOnline = (ViewPager) view.findViewById(R.id.vp_online);
         if (viewList.size() > 0){
-            LogTool.i(TAG,"viewList.size: "+viewList.size());
             viewList.clear();
         }
         for (int i = 0; i < types.length; i++) {
@@ -76,7 +73,7 @@ public class OnlineFragment extends BaseFragment implements TabLayout.OnTabSelec
 
     @Override
     public void onPageSelected(int position) {
-        LogTool.i(TAG,"onPageSelected " + position);
+
     }
 
     @Override
@@ -86,7 +83,7 @@ public class OnlineFragment extends BaseFragment implements TabLayout.OnTabSelec
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        LogTool.i(TAG,"onTabSelected " + tab.getPosition() + " " + tab.getText());
+
     }
 
     @Override

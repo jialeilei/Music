@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.TextView;
 import com.lei.musicplayer.bean.LrcContent;
@@ -41,8 +42,9 @@ public class LrcView extends TextView {
         init();
     }
 
-    public void setLrcList(List<LrcContent> mLrcList) {
+    public void setLrcList(@Nullable List<LrcContent> mLrcList) {
         this.mLrcList = mLrcList;
+        invalidate();
     }
 
     private void init() {
@@ -77,6 +79,7 @@ public class LrcView extends TextView {
 
         notCurrentPaint.setTextSize(textSize);
         notCurrentPaint.setTypeface(Typeface.DEFAULT);
+
 
         try {
             setText("");

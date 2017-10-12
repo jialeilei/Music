@@ -3,19 +3,14 @@ package com.lei.musicplayer.service;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.view.animation.AnimationUtils;
-
-import com.lei.musicplayer.R;
 import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.database.DatabaseClient;
-import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.LrcProcess;
 import com.lei.musicplayer.util.Util;
@@ -36,10 +31,6 @@ public class PlayerService extends Service {
     private List<Music> musicList = new ArrayList<Music>();
     private OnPlayMusicListener mPlayerServiceListener;
 
-    //歌词
-    LrcProcess lrcProcess = new LrcProcess();
-    List<LrcContent> lrcList = new ArrayList<LrcContent>();
-    int index = 0;//歌词索引值
 
     private Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -69,7 +60,7 @@ public class PlayerService extends Service {
         if (intent != null && intent.getAction() != null){
             switch (intent.getAction()){
                 case AppConstant.ACTION_PLAY_STOP :
-                    playOrStop(intent.getIntExtra(AppConstant.MSG_PLAY_POSITION,-1));
+                    playOrStop();
                     break;
                 case AppConstant.ACTION__CONTROL_PROGRESS://拖动进度条
                     seekBarPlay(intent.getIntExtra(AppConstant.MSG_PROGRESS,0));
@@ -88,31 +79,22 @@ public class PlayerService extends Service {
     }
 
 
-    private void playOrStop(int getPlayPosition) {
-        if (getPlayPosition > -1){//listView列表点击歌曲，直接0进度开始播放歌曲
-            play_progress = 0;
-            play_position = getPlayPosition;
+    public void playOrStop() {
+        if (mediaPlayer.isPlaying()){//暂停
+            stop();
+        }else {//继续上次位置播放
             play();
-        }else{//暂停、开始按钮点击歌曲,继续上次进度播放
-            if (mediaPlayer.isPlaying()){//暂停
-                stop();
-            }else {//继续上次位置播放
-                play();
-            }
         }
     }
 
-    private void seekBarPlay(int progress) {
+    public void seekBarPlay(int progress) {//调节进度播放
+        stop();
         play_progress = progress;
         play();
     }
 
     public void play(){
         play(musicList.get(play_position));
-    }
-
-    public void play(int position){
-        play_position = position;
     }
 
     /*
@@ -133,6 +115,7 @@ public class PlayerService extends Service {
     }
 
     private void play(Music music) {
+
         mediaPlayer.reset();
         try {
             mediaPlayer.setDataSource(music.getUrl());
@@ -165,7 +148,6 @@ public class PlayerService extends Service {
             e.printStackTrace();
         }
     }
-
 
     private void playPrevious() {
         play_progress = 0;

@@ -38,8 +38,10 @@ public class DatabaseClient {
 
     public static void addMusic(Music music) {
         List<Music> checkList = getMusic();
-        for (int i = 0; i < checkList.size(); i++) {
-            if (checkList.get(i).getId() == music.getId()){
+        int size = checkList.size();
+        for (int i = 0; i < size; i++) {
+            if (checkList.get(i).getId() == music.getId() ||
+                    checkList.get(i).getTitle() .equals(music.getTitle())){
                 return;
             }
         }

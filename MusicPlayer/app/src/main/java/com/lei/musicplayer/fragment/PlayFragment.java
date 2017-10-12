@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -15,10 +14,10 @@ import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
+import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
 import com.lei.musicplayer.view.LrcView;
-
 import java.util.List;
 
 
@@ -27,9 +26,10 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,V
     private static final String TAG = "PlayFragment";
     RelativeLayout rlTop;
     ImageView imgDown;
-    static TextView tvName,tvAuthor;
-    public LrcView lrcView;
+    private TextView tvName,tvAuthor;
+    private LrcView lrcView;
     List<LrcContent> lrcList;
+    private long duration = 0;
 
     @Nullable
     @Override
@@ -41,6 +41,7 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,V
 
     @Override
     protected void initView(View view) {
+
         rlTop = (RelativeLayout) view.findViewById(R.id.rl_top);
         rlTop.setPadding(0, AppCache.getSystemStatusHeight(),0,0);
         imgDown = (ImageView) view.findViewById(R.id.img_down);
@@ -48,24 +49,32 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,V
         tvName = (TextView) view.findViewById(R.id.tv_music_name);
         tvAuthor = (TextView) view.findViewById(R.id.tv_music_author);
         lrcView = (LrcView) view.findViewById(R.id.lrc_view);
+        //lrcView.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.lrc_slide_up));
     }
+
+    private boolean haveLrc = false;
 
     public void updateProgress(int position){
-        lrcView.setIndex(Util.lrcIndex(position,AppCache.getPlayingMusic().getDuration(),lrcList));
+        if (haveLrc){
+            lrcView.setIndex(Util.lrcIndex(position,duration,lrcList));
+        }
     }
-
 
     public void setLrc(){
+        haveLrc = false;
         lrcList = Util.initLrc(AppCache.getPlayingMusic());
+        duration = AppCache.getPlayingMusic().getDuration();
         lrcView.setLrcList(lrcList);
-        lrcView.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.lrc_slide_up));
-        LogTool.i(TAG, "setLrc list.size: " + lrcList.size());
+        if (lrcList != null){
+            haveLrc = true;
+            LogTool.i(TAG, "setLrc list.size: " + lrcList.size());
+        }
     }
 
-    public static void updateInfo(){
+    public void updateInfo(){
         Music info = AppCache.getPlayingMusic();
-        tvAuthor.setText(info.getArtist());
-        tvName.setText(info.getTitle());
+        tvAuthor.setText(info.getArtist()+" ");
+        tvName.setText(info.getTitle()+" ");
     }
 
     @Override
@@ -80,8 +89,6 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,V
 
     @Override
     public void onResume() {
-        LogTool.i(TAG,"PlayFragment onResume");
-        updateInfo();
         super.onResume();
     }
 

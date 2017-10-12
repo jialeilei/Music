@@ -28,7 +28,6 @@ import com.lei.musicplayer.fragment.OnlineFragment;
 import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.service.PlayerService;
 import com.lei.musicplayer.service.OnPlayMusicListener;
-import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
 
 public class MainActivity extends BaseActivity
@@ -39,9 +38,10 @@ public class MainActivity extends BaseActivity
     DrawerLayout drawer;
     NavigationView navigationView;
     private int play_progress = 0;
+    private int seekBarProgress = 0;
     //view
-    public static LocalFragment localFragment;
-    OnlineFragment onlineFragment;
+    private LocalFragment localFragment;
+    private OnlineFragment onlineFragment;
     private HomeFragment homeFragment;
     private PlayFragment playFragment;
     ImageButton img_next, img_play, img_category;
@@ -50,6 +50,7 @@ public class MainActivity extends BaseActivity
     SeekBar mSeekBarCurrent;
     ViewPager viewPager;
     TextView tvLocal,tvOnline,tvHome;
+    private boolean haveLrc = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +123,7 @@ public class MainActivity extends BaseActivity
         filter.addAction(AppConstant.ACTION_PROGRESS);
         // 注册BroadcastReceiver
         registerReceiver(mainReceiver, filter);
+
     }
 
 
@@ -137,7 +139,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        play_progress = progress * (int) AppCache.getPlayingMusic().getDuration() / 100;
+        seekBarProgress = progress * (int) AppCache.getPlayingMusic().getDuration() / 100;
     }
 
     @Override
@@ -147,7 +149,8 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        sendPlayInfo(AppConstant.ACTION_PLAY_STOP,true);
+        //sendPlayInfo(AppConstant.ACTION_PLAY_STOP,true);
+        getPlayService().seekBarPlay(seekBarProgress);
     }
 
     @Override
@@ -202,11 +205,11 @@ public class MainActivity extends BaseActivity
                 getPlayService().playNext();
                 break;
             case R.id.img_play:
-                sendPlayInfo(AppConstant.ACTION_PLAY_STOP,false);
+                //sendPlayInfo(AppConstant.ACTION_PLAY_STOP,false);
+                getPlayService().playOrStop();
 
                 break;
             case R.id.img_music_bottom:
-                LogTool.i(TAG,"img_music_bottom click");
                 showPlayFragment();
                 break;
             case R.id.tv_local:
@@ -229,10 +232,6 @@ public class MainActivity extends BaseActivity
         }
     }
 
-
-
-
-
     private void showPlayFragment() {
         if (isShowingFragment){
             return;
@@ -245,18 +244,26 @@ public class MainActivity extends BaseActivity
         }else {
             ft.show(playFragment);
         }
-        ft.commitAllowingStateLoss();
+        //ft.commitAllowingStateLoss();
+        ft.commitNow();
         isShowingFragment = true;
+        isShowedFragment = true;
+
 
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 playFragment.updateInfo();
+                if (haveLrc){
+                    playFragment.setLrc();
+                }
             }
         },1000);
     }
 
     boolean isShowingFragment = false;
+    boolean isShowedFragment = false;//是否展示过
+
     public void hidePlayingFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(0, R.anim.fragment_slide_down);
@@ -286,10 +293,10 @@ public class MainActivity extends BaseActivity
         int progress = play_progress * 100 / (int) AppCache.getPlayingMusic().getDuration();
         mSeekBarCurrent.setProgress(progress);
         tvMusicDuration.setText("" + Util.formatTime(play_progress));
-        if (playFragment != null){
+        if (playFragment != null && isShowingFragment){
             playFragment.updateProgress(currentPosition);
         }
-        LogTool.i(TAG,"currentPosition: "+currentPosition);
+
     }
 
     @Override
@@ -305,12 +312,20 @@ public class MainActivity extends BaseActivity
         homeFragment.refreshMusicList();
     }
 
+
+
+
     @Override
     public void onMusicChange() {
-        if (playFragment == null){
-            playFragment = new PlayFragment();
+
+        if (Util.initLrc(AppCache.getPlayingMusic()) != null){
+            haveLrc = true;
+        }else {
+            haveLrc = false;
         }
-        playFragment.setLrc();
+        if (isShowedFragment){
+            playFragment.setLrc();
+        }
     }
 
     @Override
@@ -327,7 +342,6 @@ public class MainActivity extends BaseActivity
             return;
         }
 
-        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
             return;
