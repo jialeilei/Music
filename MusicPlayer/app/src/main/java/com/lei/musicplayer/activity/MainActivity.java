@@ -28,6 +28,7 @@ import com.lei.musicplayer.fragment.OnlineFragment;
 import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.service.PlayerService;
 import com.lei.musicplayer.service.OnPlayMusicListener;
+import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
 
 public class MainActivity extends BaseActivity
@@ -50,7 +51,7 @@ public class MainActivity extends BaseActivity
     SeekBar mSeekBarCurrent;
     ViewPager viewPager;
     TextView tvLocal,tvOnline,tvHome;
-    private boolean haveLrc = false;
+    //private boolean haveLrc = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,9 +255,6 @@ public class MainActivity extends BaseActivity
             @Override
             public void run() {
                 playFragment.updateInfo();
-                if (haveLrc){
-                    playFragment.setLrc();
-                }
             }
         },1000);
     }
@@ -302,6 +300,10 @@ public class MainActivity extends BaseActivity
     @Override
     public void onMusicStop() {
         img_play.setImageResource(R.mipmap.default_stop);
+
+        if (isShowingFragment){
+            playFragment.onMusicStop();
+        }
     }
 
     @Override
@@ -310,21 +312,8 @@ public class MainActivity extends BaseActivity
         img_play.setImageResource(R.mipmap.default_playing);
         localFragment.refreshMusicList();
         homeFragment.refreshMusicList();
-    }
-
-
-
-
-    @Override
-    public void onMusicChange() {
-
-        if (Util.initLrc(AppCache.getPlayingMusic()) != null){
-            haveLrc = true;
-        }else {
-            haveLrc = false;
-        }
-        if (isShowedFragment){
-            playFragment.setLrc();
+        if (isShowingFragment){
+            playFragment.onMusicPlay();
         }
     }
 

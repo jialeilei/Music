@@ -1,6 +1,5 @@
 package com.lei.musicplayer.fragment;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,27 +8,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
-import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
 import com.lei.musicplayer.view.LrcView;
 import java.util.List;
 
-
-public class PlayFragment extends BaseFragment implements View.OnClickListener,View.OnTouchListener{
+public class PlayFragment extends BaseFragment implements View.OnClickListener,
+        View.OnTouchListener,SeekBar.OnSeekBarChangeListener{
 
     private static final String TAG = "PlayFragment";
-    RelativeLayout rlTop;
-    ImageView imgDown;
+    private RelativeLayout rlTop;
+    private ImageView imgDown, imgPlay, imgPrev, imgNext;
+    private TextView tvDuration,tvCurrent;
+    private SeekBar sbProgress;
     private TextView tvName,tvAuthor;
     private LrcView lrcView;
     List<LrcContent> lrcList;
-    private long duration = 0;
+    private int seekBarProgress = 0;//to control the progress of  music
+    int progress = 0;//show the progress of music
+    private boolean haveLrc = false;
+    int duration = 0;
 
     @Nullable
     @Override
@@ -46,35 +50,98 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,V
         rlTop.setPadding(0, AppCache.getSystemStatusHeight(),0,0);
         imgDown = (ImageView) view.findViewById(R.id.img_down);
         imgDown.setOnClickListener(this);
+        imgPlay = (ImageView) view.findViewById(R.id.fg_bottom_play);
+        imgPlay.setOnClickListener(this);
+        imgPrev = (ImageView) view.findViewById(R.id.fg_bottom_prev);
+        imgPrev.setOnClickListener(this);
+        imgNext = (ImageView) view.findViewById(R.id.fg_bottom_next);
+        imgNext.setOnClickListener(this);
         tvName = (TextView) view.findViewById(R.id.tv_music_name);
         tvAuthor = (TextView) view.findViewById(R.id.tv_music_author);
         lrcView = (LrcView) view.findViewById(R.id.lrc_view);
-        //lrcView.setAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.lrc_slide_up));
+        sbProgress = (SeekBar) view.findViewById(R.id.fg_bottom_seek_bar);
+        sbProgress.setOnSeekBarChangeListener(this);
+        tvDuration = (TextView) view.findViewById(R.id.tv_time_duration);
+        tvCurrent = (TextView) view.findViewById(R.id.tv_time_current);
     }
 
-    private boolean haveLrc = false;
+
 
     public void updateProgress(int position){
         if (haveLrc){
-            lrcView.setIndex(Util.lrcIndex(position,duration,lrcList));
+            lrcView.setIndex(Util.lrcIndex(position,AppCache.getPlayingMusic().getDuration(),lrcList));
+        }
+        progress = position * 100  / (int)AppCache.getPlayingMusic().getDuration();
+        sbProgress.setProgress(progress);
+        tvCurrent.setText("" + Util.formatTime(position));
+
+        if (!isImagePlaying){
+            imgPlay.setImageResource(R.mipmap.ic_play_btn_play);
+            isImagePlaying = true;
         }
     }
 
-    public void setLrc(){
+
+    private void setLrc(){
         haveLrc = false;
         lrcList = Util.initLrc(AppCache.getPlayingMusic());
-        duration = AppCache.getPlayingMusic().getDuration();
+        duration = (int) AppCache.getPlayingMusic().getDuration();
         lrcView.setLrcList(lrcList);
+        tvDuration.setText(Util.formatTime(duration));
         if (lrcList != null){
             haveLrc = true;
-            LogTool.i(TAG, "setLrc list.size: " + lrcList.size());
         }
     }
 
+    boolean isImagePlaying = false;
     public void updateInfo(){
         Music info = AppCache.getPlayingMusic();
-        tvAuthor.setText(info.getArtist()+" ");
-        tvName.setText(info.getTitle()+" ");
+        tvAuthor.setText(info.getArtist() + " ");
+        tvName.setText(info.getTitle() + " ");
+        setPlayImage();
+        setLrc();
+    }
+
+    private void setPlayImage() {
+        if (AppCache.isPlaying()){
+            if (!isImagePlaying){
+                imgPlay.setImageResource(R.mipmap.ic_play_btn_play);
+                isImagePlaying = true;
+            }
+        }else {
+            if (isImagePlaying){
+                imgPlay.setImageResource(R.mipmap.ic_play_btn_pause);
+                isImagePlaying = false;
+            }
+        }
+    }
+
+    public void onMusicPlay(){
+        updateInfo();
+    }
+
+    public void onMusicStop(){
+        if (isImagePlaying){
+            imgPlay.setImageResource(R.mipmap.ic_play_btn_pause);
+            isImagePlaying = false;
+        }
+
+    }
+
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        seekBarProgress = progress * (int) AppCache.getPlayingMusic().getDuration() / 100;
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        getPlayerService().seekBarPlay(seekBarProgress);
     }
 
     @Override
@@ -97,6 +164,17 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,V
         switch (v.getId()){
             case R.id.img_down:
                 getActivity().onBackPressed();
+                break;
+            case R.id.fg_bottom_play:
+                getPlayerService().playOrStop();
+                break;
+            case R.id.fg_bottom_next:
+                getPlayerService().playNext();
+                break;
+            case R.id.fg_bottom_prev:
+                getPlayerService().playPrev();
+                break;
+            default:
                 break;
         }
     }

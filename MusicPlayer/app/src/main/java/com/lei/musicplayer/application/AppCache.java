@@ -20,6 +20,7 @@ public class AppCache {
     public static List<Music> musicPlayList = new ArrayList<Music>();
     private static int mSystemStatusHeight;
     private static Music mPlayingMusic;
+    private static boolean isPlaying = false;
 
 
     private AppCache(){}
@@ -82,6 +83,14 @@ public class AppCache {
             mPlayingMusic = getInstance().localMusicList.get(0);
         }
         return mPlayingMusic;
+    }
+
+    public static void setIsPlaying(boolean state){
+        isPlaying = state;
+    }
+
+    public static boolean isPlaying(){
+        return isPlaying;
     }
 
     /*

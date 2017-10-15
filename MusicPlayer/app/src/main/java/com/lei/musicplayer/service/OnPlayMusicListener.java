@@ -5,8 +5,6 @@ package com.lei.musicplayer.service;
  */
 public interface OnPlayMusicListener {
 
-    void onMusicChange();
-
     void onMusicPlay();
 
     void onMusicCurrentPosition(int currentPosition);

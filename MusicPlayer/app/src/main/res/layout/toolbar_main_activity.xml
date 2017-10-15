@@ -12,11 +12,10 @@
         android:visibility="visible">
         <ImageButton
             android:id="@+id/img_category"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:background="@mipmap/category_white"/>
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@drawable/action_slide_down_selector"
+            android:src="@mipmap/category_white"/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="40dp"
@@ -59,12 +58,11 @@
 
         <ImageButton
             android:id="@+id/img_btn_search"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:layout_alignParentRight="true"
-            android:background="@mipmap/search_white"/>
+            android:background="@drawable/action_slide_down_selector"
+            android:src="@mipmap/search_white"/>
 
     </RelativeLayout>
 

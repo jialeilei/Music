@@ -8,11 +8,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.application.AppCache;
-import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.database.DatabaseClient;
 import com.lei.musicplayer.util.LogTool;
-import com.lei.musicplayer.util.LrcProcess;
 import com.lei.musicplayer.util.Util;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,7 +54,6 @@ public class PlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        LogTool.i(TAG, " onStartCommand ");
         if (intent != null && intent.getAction() != null){
             switch (intent.getAction()){
                 case AppConstant.ACTION_PLAY_STOP :
@@ -69,7 +66,7 @@ public class PlayerService extends Service {
                     playNext();
                     break;
                 case AppConstant.ACTION__PREVIOUS :
-                    playPrevious();
+                    playPrev();
                     break;
                 default:
                     break;
@@ -138,8 +135,8 @@ public class PlayerService extends Service {
                 }
             });
 
+            AppCache.setIsPlaying(true);
             AppCache.setPlayingMusic(music);
-            mPlayerServiceListener.onMusicChange();
             mPlayerServiceListener.onMusicPlay();
             DatabaseClient.addMusic(music);
             handler.sendEmptyMessage(1);
@@ -149,7 +146,7 @@ public class PlayerService extends Service {
         }
     }
 
-    private void playPrevious() {
+    public void playPrev() {
         play_progress = 0;
         if (play_position == 0){
             play_position = musicList.size() - 1;
@@ -178,6 +175,7 @@ public class PlayerService extends Service {
     private void stop() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()){
             mediaPlayer.stop();
+            AppCache.setIsPlaying(false);
             mPlayerServiceListener.onMusicStop();
             stopHandlerLoop();
         }

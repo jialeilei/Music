@@ -71,7 +71,7 @@ public class LrcView extends TextView {
             return;
         }
 
-        currentPaint.setColor(Color.argb(210, 251, 248, 29));
+        currentPaint.setColor(Color.WHITE);
         notCurrentPaint.setColor(Color.argb(140, 255, 255, 255));
 
         currentPaint.setTextSize(textSize);
@@ -106,7 +106,7 @@ public class LrcView extends TextView {
                 canvas.drawText(mLrcList.get(i).getLrcStr(), width / 2, tempY, notCurrentPaint);
             }
         } catch (Exception e) {
-            canvas.drawText("...木有歌词文件，赶紧去下载...", width / 2, height / 2, notCurrentPaint);
+            canvas.drawText("暂无歌词", width / 2, height / 2, notCurrentPaint);
         }
     }
 

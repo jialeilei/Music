@@ -41,7 +41,7 @@ public class DatabaseClient {
         int size = checkList.size();
         for (int i = 0; i < size; i++) {
             if (checkList.get(i).getId() == music.getId() ||
-                    checkList.get(i).getTitle() .equals(music.getTitle())){
+                    checkList.get(i).getTitle().equals(music.getTitle())){
                 return;
             }
         }
