@@ -10,51 +10,29 @@
         android:layout_height="45dp"
         android:background="@color/colorPrimary"
         android:visibility="visible">
+
         <ImageButton
-            android:id="@+id/img_btn_category"
+            android:id="@+id/img_btn_back"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/action_selector"
-            android:src="@mipmap/category_white"/>
+            android:src="@mipmap/back_white"
+            android:background="@drawable/action_selector"/>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginTop="5dp"
+            android:layout_marginRight="120dp"
             android:orientation="horizontal"
             android:layout_centerHorizontal="true">
-            <TextView
-                android:id="@+id/tv_home"
+            <EditText
+                android:id="@+id/et_search"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginRight="15dp"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:text="@string/main_title_home"/>
-            <TextView
-                android:id="@+id/tv_local"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginRight="15dp"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:text="@string/main_title_local"/>
-
-            <TextView
-                android:id="@+id/tv_online"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:text="@string/main_title_online"/>
-
-
-
+                android:hint="@string/music_or_author"
+                android:background="@null"
+                android:textCursorDrawable="@drawable/cursor_selector"/>
         </LinearLayout>
-
 
         <ImageButton
             android:id="@+id/img_btn_search"
@@ -63,7 +41,6 @@
             android:layout_alignParentRight="true"
             android:background="@drawable/action_selector"
             android:src="@mipmap/search_white"/>
-
     </RelativeLayout>
 
 </LinearLayout>

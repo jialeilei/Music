@@ -29,7 +29,8 @@
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"></activity>
 
-        <activity android:name=".activity.RankActivity"></activity>
+        <activity android:name=".activity.SearchActivity"
+            android:windowSoftInputMode="adjustPan"></activity>
     </application>
 
 </manifest>

@@ -14,8 +14,10 @@ import com.lei.musicplayer.constant.AppConstant;
 import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.http.MusicCallBack;
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -115,13 +117,10 @@ public class Util {
             //the path of the music
             String url = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
             String albumId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-
             //getCoverImage(Integer.parseInt(albumId));
             //String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
             String albumKey = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_KEY));
             int isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.IS_MUSIC));
-            //LogTool.i(TAG,"albumArt: "+albumArt);
-
             Music info = new Music();
             if (isMusic != 0){
                 info.setId(id);
@@ -153,7 +152,6 @@ public class Util {
                 String album_art =  cursor1.getString(0);
                 String album =  cursor1.getString(1);
                 String albumKey = cursor1.getString(2);
-                //LogTool.i(TAG, "ALBUM_ART 0 " + album_art + "ALBUM_ART 1 " + album + " ALBUM_ART 2 " + albumKey);
                 if (album_art != null && album != null){
                     for (Music info : infos) {
                         if (info.getAlbumKey().equals(albumKey)){
@@ -168,12 +166,19 @@ public class Util {
         return infos;
     }
 
-    public static String mkdirs(String dir) {
+    private static String mkdirs(String dir) {
         File file = new File(dir);
         if (!file.exists()) {
             file.mkdirs();
         }
         return dir;
+    }
+
+
+    public static void writeLrcToDir(Music music, String stream, MusicCallBack callBack) {
+        CHILD_PATH = music.getTitle() + "-" + music.getArtist() + ".lrc";
+        PARENT_PATH = BASIC_PATH + LRC;
+        writeToDir(CHILD_PATH, stream, callBack);
     }
 
     public static void writeLrcToDir(Music music, InputStream stream, MusicCallBack callBack) {
@@ -194,7 +199,7 @@ public class Util {
             @Override
             public void run() {
                 try {
-                    Util.mkdirs(PARENT_PATH);
+                    mkdirs(PARENT_PATH);
                     File file = new File(PARENT_PATH ,fileName);
                     FileOutputStream fos = new FileOutputStream(file);
                     BufferedInputStream bis = new BufferedInputStream(is);
@@ -216,6 +221,24 @@ public class Util {
         }).start();
     }
 
+    private static void writeToDir(final String fileName ,final String is, final MusicCallBack callBack) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mkdirs(PARENT_PATH);
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(PARENT_PATH + fileName));
+                    bw.write(is);
+                    bw.flush();
+                    bw.close();
+                    updateMedia(PARENT_PATH, callBack);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
 
     //filename是我们的文件全名，包括后缀
     public static void updateMedia(String filename, final MusicCallBack callBack){
@@ -224,17 +247,16 @@ public class Util {
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
                         callBack.onSuccess("scanned finished");
-                        //LogTool.i("ExternalStorage", "Scanned " + path + " uri:" + uri);
                     }
                 });
     }
 
-    public static void ToastLong(String msg){
-        Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
-    }
-    public static void ToastShort(String msg){
-        Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
-    }
+//    public static void ToastLong(String msg){
+//        Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
+//    }
+//    public static void ToastShort(String msg){
+//        Toast.makeText(mContext,msg,Toast.LENGTH_SHORT).show();
+//    }
 
     public static Music onLineMusic2Music(OnlineMusic mOnlineMusic,String file_link,int duration) {
         Music info = onLineMusicToMusic(mOnlineMusic);

@@ -1,8 +1,11 @@
 package com.lei.musicplayer.http;
 
+import com.lei.musicplayer.bean.Lrc;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.bean.MusicLink;
 import com.lei.musicplayer.bean.OnLineMusicList;
+import com.lei.musicplayer.bean.SearchMusic;
+import com.lei.musicplayer.util.ToastTool;
 import com.lei.musicplayer.util.Util;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -86,7 +89,6 @@ public class HttpClient {
     /*
     * file_duration
     * file_link
-    * Transfer-Encoding: chunked
     * */
     public static void getMusicLink(String songId,final MusicCallBack<MusicLink> callBack){
         getApiService().getMusicLink(songId, METHOD_DOWNLOAD_MUSIC).enqueue(new Callback<MusicLink>() {
@@ -104,30 +106,33 @@ public class HttpClient {
         });
     }
 
+    public static void getSearchMusic(String keyword,final MusicCallBack<SearchMusic> callBack){
+        getApiService().getSearchMusic(METHOD_SEARCH_MUSIC, keyword).enqueue(new Callback<SearchMusic>() {
+            @Override
+            public void onResponse(Call<SearchMusic> call, Response<SearchMusic> response) {
+                if (response.isSuccessful()) {
+                    callBack.onSuccess(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchMusic> call, Throwable t) {
+                callBack.onFail(t);
+            }
+        });
+    }
+
     public static void download(final Music music, final MusicCallBack callBack){
-        Util.ToastShort("正在下载");
+        downloadMusic(music, callBack);
+        downloadLrcStream(music, callBack);
+    }
+
+    public static void downloadMusic(final Music music, final MusicCallBack callBack) {
         getApiService().download(music.getUrl()).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     Util.writeMusicToDir(music, response.body().byteStream(), callBack);
-                    //callBack.onSuccess("length: " + response.body().contentLength());
-                    Util.ToastShort("下载完成");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                callBack.onFail(t);
-            }
-        });
-
-        getApiService().download(music.getLrcLink()).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Util.writeLrcToDir(music, response.body().byteStream(), callBack);
-                    Util.ToastShort("歌词下载完成");
                 }
             }
 
@@ -138,14 +143,16 @@ public class HttpClient {
         });
     }
 
-    public static void downloadLrc(final Music music, final MusicCallBack callBack){
-        Util.ToastShort("正在下载");
+    /*
+    * inputStream
+    * */
+    private static void downloadLrcStream(final Music music, final MusicCallBack callBack) {
         getApiService().download(music.getLrcLink()).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     Util.writeLrcToDir(music, response.body().byteStream(), callBack);
-                    Util.ToastShort("歌词下载完成");
+                    ToastTool.ToastShort("歌词下载完成");
                 }
             }
 
@@ -155,6 +162,27 @@ public class HttpClient {
             }
         });
     }
+    /*
+    * String
+    * */
+    public static void downloadLrc(final Music music, final MusicCallBack<Lrc> callBack){
+        getApiService().getLrc(METHOD_LRC, String.valueOf(music.getId())).enqueue(new Callback<Lrc>() {
+            @Override
+            public void onResponse(Call<Lrc> call, Response<Lrc> response) {
+                if (response.isSuccessful()){
+                    Util.writeLrcToDir(music, response.body().getLrcContent(), callBack);
+                    callBack.onSuccess(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Lrc> call, Throwable t) {
+                callBack.onFail(t);
+            }
+        });
+    }
+
+
 
 
 }

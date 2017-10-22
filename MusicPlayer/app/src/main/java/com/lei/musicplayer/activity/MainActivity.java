@@ -45,7 +45,7 @@ public class MainActivity extends BaseActivity
     private OnlineFragment onlineFragment;
     private HomeFragment homeFragment;
     private PlayFragment playFragment;
-    ImageButton img_next, img_play, img_category;
+    ImageButton img_next, img_play, img_category,img_search;
     ImageView img_bottom;
     TextView tvMusicName,tvMusicAuthor,tvMusicDuration;
     SeekBar mSeekBarCurrent;
@@ -82,8 +82,10 @@ public class MainActivity extends BaseActivity
         fragmentAdapter.addFragment(onlineFragment);
         viewPager.setAdapter(fragmentAdapter);
         viewPager.setCurrentItem(0);
-        img_category = (ImageButton) findViewById(R.id.img_category);
+        img_category = (ImageButton) findViewById(R.id.img_btn_category);
         img_category.setOnClickListener(this);
+        img_search = (ImageButton) findViewById(R.id.img_btn_search);
+        img_search.setOnClickListener(this);
         //bottom play
         img_play = (ImageButton) findViewById(R.id.img_play);
         img_next = (ImageButton) findViewById(R.id.img_next);
@@ -225,8 +227,12 @@ public class MainActivity extends BaseActivity
                 viewPager.setCurrentItem(0);
                 changeTitleColor(0);
                 break;
-            case R.id.img_category:
+            case R.id.img_btn_category:
                 drawer.openDrawer(GravityCompat.START);
+                break;
+            case R.id.img_btn_search:
+                Intent intent = new Intent(this,SearchActivity.class);
+                startActivity(intent);
                 break;
             default:
                 break;

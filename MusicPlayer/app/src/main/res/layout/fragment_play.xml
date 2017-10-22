@@ -15,7 +15,7 @@
             android:id="@+id/img_down"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/action_slide_down_selector"
+            android:background="@drawable/action_selector"
             android:scaleType="centerInside"
             android:src="@mipmap/more_unfold"/>
         <TextView

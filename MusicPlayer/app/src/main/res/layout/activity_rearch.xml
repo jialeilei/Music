@@ -6,7 +6,7 @@
     android:background="@color/white"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.lei.musicplayer.activity.RankActivity">
+    tools:context=".activity.SearchActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -18,22 +18,22 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:background="@color/colorPrimary"
             android:visibility="gone"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <include android:id="@+id/toolbar_top"
-            layout="@layout/toolbar_online_activity"></include>
+            layout="@layout/toolbar_search_activity"></include>
     </android.support.design.widget.AppBarLayout>
 
 
 
     <ListView
-        android:id="@+id/lv_rank"
+        android:id="@+id/lv_search"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar_top"
+        android:longClickable="true"
         android:divider="@null"></ListView>
 
 </LinearLayout>

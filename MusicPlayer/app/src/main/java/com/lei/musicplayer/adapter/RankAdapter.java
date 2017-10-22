@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.lei.musicplayer.R;
+import com.lei.musicplayer.activity.SearchActivity;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.bean.MusicLink;
@@ -20,6 +21,7 @@ import com.lei.musicplayer.bean.OnlineMusic;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.http.MusicCallBack;
 import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.ToastTool;
 import com.lei.musicplayer.util.Util;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,13 +102,11 @@ public class RankAdapter extends BaseAdapter {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                LogTool.i(TAG, "setNegativeButton");
                             }
                         })
                         .setPositiveButton("下载", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                LogTool.i(TAG, "setPositiveButton");
                                 HttpClient.getMusicLink(list.get(position).getSong_id(), new MusicCallBack<MusicLink>() {
                                     @Override
                                     public void onSuccess(MusicLink response) {
@@ -190,12 +190,12 @@ public class RankAdapter extends BaseAdapter {
         HttpClient.download(music, new MusicCallBack() {
             @Override
             public void onSuccess(Object response) {
-                Util.ToastShort("下载完成");
+                ToastTool.ToastShort(mContext, "下载完成");
             }
 
             @Override
             public void onFail(Throwable t) {
-                Util.ToastShort("下载失败，请重新下载");
+                ToastTool.ToastShort(mContext , "下载失败，请重新下载");
             }
         });
     }

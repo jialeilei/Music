@@ -18,10 +18,6 @@ import com.lei.musicplayer.util.LogTool;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 /**
  * Created by lei on 2017/9/10.
  */
