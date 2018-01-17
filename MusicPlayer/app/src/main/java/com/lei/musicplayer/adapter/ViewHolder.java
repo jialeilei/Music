@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import retrofit2.http.PUT;
 
 /**
  * Created by lei on 2016/9/6.

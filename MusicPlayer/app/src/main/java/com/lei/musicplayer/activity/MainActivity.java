@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,13 +30,14 @@ import com.lei.musicplayer.fragment.PlayFragment;
 import com.lei.musicplayer.service.PlayerService;
 import com.lei.musicplayer.service.OnPlayMusicListener;
 import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.Logger;
 import com.lei.musicplayer.util.Util;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener ,ViewPager.OnPageChangeListener,
         SeekBar.OnSeekBarChangeListener,View.OnClickListener,OnPlayMusicListener {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
     DrawerLayout drawer;
     NavigationView navigationView;
     private int play_progress = 0;
@@ -96,7 +98,12 @@ public class MainActivity extends BaseActivity
         mSeekBarCurrent = (SeekBar) findViewById(R.id.seek_bar_current);
         setBottomMusicInfo();
 
+
+        LogTool.i(">>>>msg");
+
     }
+
+
 
     private void setBottomMusicInfo() {
         tvMusicName.setText(AppCache.getPlayingMusic().getTitle());

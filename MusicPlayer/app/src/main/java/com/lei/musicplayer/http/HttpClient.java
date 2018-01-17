@@ -52,7 +52,11 @@ public class HttpClient {
         if (retrofit == null){
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClient = new OkHttpClient.Builder().addInterceptor(logging).build();
+            httpClient = new OkHttpClient.Builder()
+                    .addInterceptor(logging)
+                    .addInterceptor(new HttpInterceptor())
+                    .build();
+
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL_BEFORE) // 设置网络请求的Url地址
                     .client(httpClient)
@@ -143,9 +147,12 @@ public class HttpClient {
         });
     }
 
-    /*
-    * inputStream
-    * */
+
+    /**
+     * inputStream
+     * @param music
+     * @param callBack
+     */
     private static void downloadLrcStream(final Music music, final MusicCallBack callBack) {
         getApiService().download(music.getLrcLink()).enqueue(new Callback<ResponseBody>() {
             @Override
@@ -162,9 +169,12 @@ public class HttpClient {
             }
         });
     }
-    /*
-    * String
-    * */
+
+    /**
+     * String
+     * @param music
+     * @param callBack
+     */
     public static void downloadLrc(final Music music, final MusicCallBack<Lrc> callBack){
         getApiService().getLrc(METHOD_LRC, String.valueOf(music.getId())).enqueue(new Callback<Lrc>() {
             @Override
