@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">青柠音乐</string>
+    <string name="home_playlist">播放列表</string>
+    <string name="home_collection">收藏列表</string>
+    <string name="main_title_local">本地</string>
+    <string name="main_title_online">在线</string>
+    <string name="main_title_home">主页</string>
+    <string name="home_playlist_text">列表为空~</string>
+    <string name="music_or_author">输入歌曲名或歌手</string>
+    <string name="playing_music">正在播放音乐</string>
+</resources>
