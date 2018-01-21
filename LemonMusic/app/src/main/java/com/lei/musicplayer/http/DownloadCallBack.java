@@ -9,12 +9,4 @@ public interface DownloadCallBack {
 
     void onMusicFail();
 
-    void onLrcSuccess();
-
-    void onLrcFail();
-
-    void onAlbumSuccess();
-
-    void onAlbumFail();
-
 }

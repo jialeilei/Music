@@ -4,6 +4,7 @@ package com.lei.musicplayer.adapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,8 +133,6 @@ public class RankAdapter extends BaseAdapter {
         });
     }
 
-
-
     private void setView(View convertView, ViewHolder holder) {
         holder.img = (ImageView) convertView.findViewById(R.id.img_music);
         holder.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
@@ -201,26 +200,6 @@ public class RankAdapter extends BaseAdapter {
                 ToastTool.ToastShort("下载失败，请重新下载");
             }
 
-            @Override
-            public void onLrcSuccess() {
-
-            }
-
-            @Override
-            public void onLrcFail() {
-
-            }
-
-            @Override
-            public void onAlbumSuccess() {
-
-            }
-
-            @Override
-            public void onAlbumFail() {
-
-            }
-
         });
     }
 
@@ -244,36 +223,12 @@ public class RankAdapter extends BaseAdapter {
 
     private void downloadAlbum(Music music, OnlineMusic onlineMusic) {
         String imgUrl = "";
-        HttpClient.downloadAlbum(music, imgUrl, new DownloadCallBack() {
-            @Override
-            public void onMusicSuccess() {
-
-            }
-
-            @Override
-            public void onMusicFail() {
-
-            }
-
-            @Override
-            public void onLrcSuccess() {
-
-            }
-
-            @Override
-            public void onLrcFail() {
-
-            }
-
-            @Override
-            public void onAlbumSuccess() {
-
-            }
-
-            @Override
-            public void onAlbumFail() {
-                LogTool.i("onAlbumFail");
-            }
-        });
+        if (!TextUtils.isEmpty(onlineMusic.getPic_big())){
+            imgUrl = onlineMusic.getPic_big();
+        }else if (!TextUtils.isEmpty(onlineMusic.getPic_small())){
+            imgUrl = onlineMusic.getPic_small();
+        }
+        HttpClient.downloadAlbum(music, imgUrl);
     }
+
 }

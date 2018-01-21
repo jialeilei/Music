@@ -176,25 +176,24 @@ public class Util {
         return dir;
     }
 
-    public static void writeLrcToDir(Music music, String string, DownloadCallBack callBack) {
+    public static void writeLrcToDir(Music music, String string) {
         PARENT_PATH = BASIC_PATH + LRC;
-        writeToDir(getFileName(music) + ".lrc", string, callBack);
+        writeToDir(getFileName(music) + ".lrc", string, null);
     }
 
-    public static void writeLrcToDir(Music music, InputStream stream, DownloadCallBack callBack) {
+    public static void writeLrcToDir(Music music, InputStream stream) {
         PARENT_PATH = BASIC_PATH + LRC;
-        writeToDir(getFileName(music) + ".lrc", stream, callBack);
+        writeToDir(getFileName(music) + ".lrc", stream, null);
     }
 
     /**
      *
      * @param music
      * @param stream
-     * @param callBack
      */
-    public static void writeAlbumToDir(Music music, InputStream stream, DownloadCallBack callBack) {
+    public static void writeAlbumToDir(Music music, InputStream stream) {
         PARENT_PATH = BASIC_PATH + ALBUM;
-        writeToDir(getFileName(music), stream, callBack);
+        writeToDir(getFileName(music), stream, null);
     }
 
     public static void writeMusicToDir(final Music music ,final InputStream stream,DownloadCallBack callBack){
@@ -236,9 +235,9 @@ public class Util {
         }).start();
     }
 
-    private static void writeToDir(final String fileName ,final String is, final DownloadCallBack callBack) {
+    private static void writeToDir(final String fileName ,final String is,final DownloadCallBack callBack) {
         if (is == null){
-            callBack.onLrcFail();
+
             return;
         }
         new Thread(new Runnable() {
@@ -250,7 +249,7 @@ public class Util {
                     bw.write(is);
                     bw.flush();
                     bw.close();
-                    updateMedia(PARENT_PATH, callBack);
+                    updateMedia(PARENT_PATH, null);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -260,12 +259,19 @@ public class Util {
 
 
     //filename是我们的文件全名，包括后缀
-    public static void updateMedia(String filename, final DownloadCallBack callBack){
+    /**
+     *
+     * @param filename
+     * @param callBack  下载音乐的反馈
+     */
+    public static void updateMedia(String filename, @Nullable final DownloadCallBack callBack){
         MediaScannerConnection.scanFile(mContext,
                 new String[]{filename}, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
-                        callBack.onMusicSuccess();
+                        if (callBack != null){
+                            callBack.onMusicSuccess();
+                        }
                     }
                 });
     }

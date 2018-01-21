@@ -23,7 +23,7 @@ public abstract class HttpHelper {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClient = new OkHttpClient.Builder()
-                    .addInterceptor(logging)
+                    //.addInterceptor(logging)
                     .addInterceptor(new Interceptor() {
                         @Override
                         public Response intercept(Chain chain) throws IOException {
@@ -37,7 +37,7 @@ public abstract class HttpHelper {
                     .baseUrl(ApiService.BASE_URL) // 设置网络请求的Url地址
                     .client(httpClient)
                     .addConverterFactory(GsonConverterFactory.create()) // 设置数据解析器
-                            // .addCallAdapterFactory(RxJavaCallAdapterFactory.create()) // 支持RxJava平台
+                    // .addCallAdapterFactory(RxJavaCallAdapterFactory.create()) // 支持RxJava平台
                     .build();
         }
         return retrofit;

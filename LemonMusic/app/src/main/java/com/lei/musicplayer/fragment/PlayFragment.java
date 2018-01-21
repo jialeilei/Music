@@ -103,44 +103,6 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,
 
     private void getLrc(Music music) {
         if (music.getMusicType() != MusicType.local)return;
-        ToastTool.ToastShort("正在下载歌词");
-
-        HttpClient.downloadLrcString(music, new DownloadCallBack() {
-            @Override
-            public void onMusicSuccess() {
-
-            }
-
-            @Override
-            public void onMusicFail() {
-
-            }
-
-            @Override
-            public void onLrcSuccess() {
-                ToastTool.ToastShort("歌词下载成功");
-                lrcList = Util.initLrc(AppCache.getPlayingMusic());
-                if (lrcList != null) {
-                    lrcView.setLrcList(lrcList);
-                    haveLrc = true;
-                }
-            }
-
-            @Override
-            public void onLrcFail() {
-                ToastTool.ToastShort("歌词下载失败");
-            }
-
-            @Override
-            public void onAlbumSuccess() {
-
-            }
-
-            @Override
-            public void onAlbumFail() {
-
-            }
-        });
     }
 
     boolean isImagePlaying = false;

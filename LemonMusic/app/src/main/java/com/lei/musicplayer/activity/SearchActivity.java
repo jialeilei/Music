@@ -17,7 +17,6 @@ import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.http.DownloadCallBack;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.http.GetCallBack;
-import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.ToastTool;
 import java.util.ArrayList;
 import java.util.List;
@@ -168,62 +167,12 @@ public class SearchActivity extends BaseActivity implements
                 ToastTool.ToastShort("歌曲下载失败");
             }
 
-            @Override
-            public void onLrcSuccess() {
-
-            }
-
-            @Override
-            public void onLrcFail() {
-
-            }
-
-            @Override
-            public void onAlbumSuccess() {
-
-            }
-
-            @Override
-            public void onAlbumFail() {
-
-            }
         });
 
     }
 
     private void downloadLrc() {
-        HttpClient.downloadLrcString(mMusic, new DownloadCallBack() {
-            @Override
-            public void onMusicSuccess() {
-
-            }
-
-            @Override
-            public void onMusicFail() {
-
-            }
-
-            @Override
-            public void onLrcSuccess() {
-
-            }
-
-            @Override
-            public void onLrcFail() {
-                ToastTool.ToastShort("歌词下载失败");
-            }
-
-            @Override
-            public void onAlbumSuccess() {
-
-            }
-
-            @Override
-            public void onAlbumFail() {
-
-            }
-
-        });
+        HttpClient.downloadLrcString(mMusic);
     }
 
     private void setMusicInfo(int position, MusicLink response) {
