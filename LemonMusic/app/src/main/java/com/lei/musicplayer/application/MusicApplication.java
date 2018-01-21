@@ -18,7 +18,6 @@ public class MusicApplication extends Application {
 
         AppCache.init(this);
         Util.init(this);
-        HttpClient.init();
         DatabaseClient.init(this);
         ToastTool.init(this);
 

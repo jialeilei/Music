@@ -7,7 +7,6 @@ import android.view.View;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.Music;
-import com.lei.musicplayer.util.LogTool;
 import com.lei.musicplayer.util.Util;
 import java.util.List;
 

@@ -28,7 +28,7 @@ import java.util.List;
 public class SearchActivity extends BaseActivity implements
         AdapterView.OnItemClickListener,View.OnClickListener,ListView.OnItemLongClickListener{
 
-    private static final String TAG = "SearchActivity";
+    private static final String TAG = SearchActivity.class.getSimpleName();
 
     private ImageButton imgBack,imgSearch;
     private EditText etSearch;
@@ -86,20 +86,20 @@ public class SearchActivity extends BaseActivity implements
         HttpClient.getSearchMusic(keyword, new GetCallBack<SearchMusic>() {
             @Override
             public void onSuccess(SearchMusic response) {
-                if (response.getSong().size() > 0) {
-                    LogTool.i(TAG, "onSuccess size: " + response.getSong().size() + " "
-                            + response.getSong().toString());
+                if (response.getSong() != null && response.getSong().size() > 0) {
                     mSongList = response.getSong();
                     adapter = new SearchMusicAdapter(SearchActivity.this, mSongList,
                             R.layout.item_search_list);
                     listView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
+                } else {
+                    ToastTool.ToastLong("没有搜索到歌曲");
                 }
             }
 
             @Override
             public void onFail(Throwable t) {
-                LogTool.i(TAG, "onFail " + t);
+                ToastTool.ToastLong("搜索失败，请检查网络");
             }
         });
     }
@@ -140,6 +140,7 @@ public class SearchActivity extends BaseActivity implements
                 ToastTool.ToastShort("正在下载");
                 downloadMusic();
                 downloadLrc();
+                downloadAlbum();
             }
 
             @Override
@@ -147,6 +148,10 @@ public class SearchActivity extends BaseActivity implements
                 ToastTool.ToastShort("无法获取音乐");
             }
         });
+
+    }
+
+    private void downloadAlbum() {
 
     }
 

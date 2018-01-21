@@ -115,6 +115,7 @@ public class RankAdapter extends BaseAdapter {
                                                 response.getBitrate().getFile_link(),
                                                 response.getBitrate().getFile_duration());
                                         downloadMusic(music);
+                                        downloadAlbum(music, list.get(position));
                                     }
 
                                     @Override
@@ -130,6 +131,8 @@ public class RankAdapter extends BaseAdapter {
             }
         });
     }
+
+
 
     private void setView(View convertView, ViewHolder holder) {
         holder.img = (ImageView) convertView.findViewById(R.id.img_music);
@@ -186,25 +189,11 @@ public class RankAdapter extends BaseAdapter {
         TextView tvTitle,tvAuthor;
     }
 
-
-
     private void downloadMusic(Music music){
         HttpClient.download(music, new DownloadCallBack() {
             @Override
             public void onMusicSuccess() {
-
-                AppCache.getPlayService().scanLocalMusic(new ScanCallBack() {
-                    @Override
-                    public void onFail(String msg) {
-
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        LogTool.i(TAG, "下载并且媒体播放器扫描完成 AppCache.getLocalMusicList().size(): "
-                                + AppCache.getLocalMusicList().size());
-                    }
-                });
+                scanMusic();
             }
 
             @Override
@@ -235,4 +224,56 @@ public class RankAdapter extends BaseAdapter {
         });
     }
 
+    /**
+     * 扫描媒体库进行更新音乐
+     */
+    private void scanMusic() {
+        AppCache.getPlayService().scanLocalMusic(new ScanCallBack() {
+            @Override
+            public void onFail(String msg) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                LogTool.i(TAG, "下载并且媒体播放器扫描完成 AppCache.getLocalMusicList().size(): "
+                        + AppCache.getLocalMusicList().size());
+            }
+        });
+    }
+
+    private void downloadAlbum(Music music, OnlineMusic onlineMusic) {
+        String imgUrl = "";
+        HttpClient.downloadAlbum(music, imgUrl, new DownloadCallBack() {
+            @Override
+            public void onMusicSuccess() {
+
+            }
+
+            @Override
+            public void onMusicFail() {
+
+            }
+
+            @Override
+            public void onLrcSuccess() {
+
+            }
+
+            @Override
+            public void onLrcFail() {
+
+            }
+
+            @Override
+            public void onAlbumSuccess() {
+
+            }
+
+            @Override
+            public void onAlbumFail() {
+                LogTool.i("onAlbumFail");
+            }
+        });
+    }
 }

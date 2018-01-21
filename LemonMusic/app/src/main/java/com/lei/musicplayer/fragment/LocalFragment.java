@@ -10,6 +10,7 @@ import android.widget.ListView;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.LocalListAdapter;
 import com.lei.musicplayer.application.AppCache;
+import com.lei.musicplayer.util.LogTool;
 
 
 /**
@@ -53,6 +54,8 @@ public class LocalFragment extends BaseFragment implements AdapterView.OnItemCli
 
     @Override
     public void onResume() {
+        LogTool.i("onResume musicSize:" + AppCache.getLocalMusicList().size());
+        adapter.notifyDataSetChanged();
         super.onResume();
     }
 

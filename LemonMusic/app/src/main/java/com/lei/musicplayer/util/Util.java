@@ -6,6 +6,8 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+
 import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.bean.OnlineMusic;
@@ -106,7 +108,7 @@ public class Util {
         for (int i = 0; i < cursor.getCount(); i++) {
             cursor.moveToNext();
             long duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-            //对歌曲长度进行过滤
+            //对歌曲时间长度进行过滤
             if (duration < AppConstant.MUSIC_DURATION){
                 continue;
             }
@@ -174,14 +176,25 @@ public class Util {
         return dir;
     }
 
-    public static void writeLrcToDir(Music music, String stream, DownloadCallBack callBack) {
+    public static void writeLrcToDir(Music music, String string, DownloadCallBack callBack) {
         PARENT_PATH = BASIC_PATH + LRC;
-        writeToDir(getFileName(music) + ".lrc", stream, callBack);
+        writeToDir(getFileName(music) + ".lrc", string, callBack);
     }
 
     public static void writeLrcToDir(Music music, InputStream stream, DownloadCallBack callBack) {
         PARENT_PATH = BASIC_PATH + LRC;
         writeToDir(getFileName(music) + ".lrc", stream, callBack);
+    }
+
+    /**
+     *
+     * @param music
+     * @param stream
+     * @param callBack
+     */
+    public static void writeAlbumToDir(Music music, InputStream stream, DownloadCallBack callBack) {
+        PARENT_PATH = BASIC_PATH + ALBUM;
+        writeToDir(getFileName(music), stream, callBack);
     }
 
     public static void writeMusicToDir(final Music music ,final InputStream stream,DownloadCallBack callBack){
