@@ -47,7 +47,7 @@ public class DatabaseClient {
         }
         // 如果当我们二次调用这个数据库方法,他们调用的是同一个数据库对象,在这里的方法创建的数据调用对象是用的同一个对象
         db = database.getWritableDatabase();
-        db.execSQL("insert into playlist(" + MUSIC_ID + ","
+        db.execSQL("insert into " + TABLE_PLAY_LIST + " (" + MUSIC_ID + ","
                 + MUSIC_TITLE + ","
                 + MUSIC_ARTIST + ","
                 + MUSIC_DURATION + ","
@@ -57,6 +57,22 @@ public class DatabaseClient {
                 + MUSIC_ALBUM_ART + ") values(?,?,?,?,?,?,?,?)", new Object[]
                 {music.getId(), music.getTitle(), music.getArtist(),music.getDuration(),music.getMusicType(),
                 music.getUrl(),music.getLrcLink(),music.getAlbumArt()});
+    }
+
+    public static void deleteMusic(Music music){
+        List<Music> checkList = getMusic();
+        int size = checkList.size();
+        for (int i = 0; i < size; i++) {
+            if (checkList.get(i).getId() == music.getId() ||
+                    checkList.get(i).getTitle().equals(music.getTitle())){
+                db = database.getWritableDatabase();
+                db.execSQL("delete from " + TABLE_PLAY_LIST + " where "
+                        + MUSIC_ID + "=? or "
+                        + MUSIC_TITLE + "=?", new Object[]
+                        { music.getId(),music.getTitle() });
+            }
+        }
+
     }
 
     public static List<Music> getMusic(){

@@ -52,17 +52,15 @@ public class MainActivity extends BaseActivity
     TextView tvLocal,tvOnline,tvHome;
     //private boolean haveLrc = false;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        getPlayService().setOnPlayerListener(this);
-        initView();
-        setListener();
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
+        getPlayService().setOnPlayerListener(this);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -94,7 +92,11 @@ public class MainActivity extends BaseActivity
         tvMusicDuration = (TextView) findViewById(R.id.tv_music_duration);
         mSeekBarCurrent = (SeekBar) findViewById(R.id.seek_bar_current);
         setBottomMusicInfo();
+    }
 
+    @Override
+    protected void initData() {
+        setListener();
     }
 
     private void setBottomMusicInfo() {

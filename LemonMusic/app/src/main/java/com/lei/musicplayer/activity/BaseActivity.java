@@ -16,15 +16,24 @@ import com.lei.musicplayer.service.PlayerService;
 /**
  * Created by lei on 2017/8/3.
  */
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
     protected Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(getLayoutId());
         setSystemBarTransparent();
+        initView();
+        initData();
     }
+
+    protected abstract int getLayoutId();
+
+    protected abstract void initView();
+
+    protected void initData(){}
 
     private void setSystemBarTransparent() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

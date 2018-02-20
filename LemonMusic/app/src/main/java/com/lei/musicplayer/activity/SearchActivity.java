@@ -1,7 +1,6 @@
 package com.lei.musicplayer.activity;
 
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,13 +36,12 @@ public class SearchActivity extends BaseActivity implements
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rearch);
-        initView();
+    protected int getLayoutId() {
+        return R.layout.activity_rearch;
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         imgBack = (ImageButton) findViewById(R.id.img_btn_back);
         imgBack.setOnClickListener(this);
         imgSearch = (ImageButton) findViewById(R.id.img_btn_search);

@@ -18,7 +18,7 @@ import com.lei.musicplayer.util.L;
  */
 public class LocalFragment extends BaseFragment implements AdapterView.OnItemClickListener{
 
-    private static final String TAG = "LocalFragment";
+    private static final String TAG = LocalFragment.class.getSimpleName();
     private LocalListAdapter adapter;
     private ListView mLocalMusicListView;
 

@@ -1,6 +1,8 @@
 package com.lei.musicplayer.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
@@ -50,6 +52,36 @@ public class HomeListAdapter extends CommonAdapter<Music> {
                 AppCache.getPlayService().play(mData,position);
             }
         });
+
+        viewHolder.getConvertView().setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showDialog(position);
+                return false;
+            }
+        });
+
+    }
+
+    private void showDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("删除")
+                .setMessage("是否删除列表中的 " + mData.get(position).getTitle()+" ?")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DatabaseClient.deleteMusic(mData.get(position));
+                        refreshData();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create();
+        builder.show();
 
     }
 

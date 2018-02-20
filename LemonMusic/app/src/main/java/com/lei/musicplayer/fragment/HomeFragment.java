@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.ViewPagerAdapter;
@@ -101,6 +102,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,
 
         }
     }
+
 
     private void setTitleStatus(int i) {
         homeViewPager.setCurrentItem(i);
