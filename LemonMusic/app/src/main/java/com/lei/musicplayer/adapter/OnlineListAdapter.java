@@ -14,7 +14,7 @@ import com.lei.musicplayer.bean.OnlineMusic;
 import com.lei.musicplayer.bean.SongListInfo;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.http.GetCallBack;
-import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.L;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class OnlineListAdapter extends BaseAdapter {
 
                 @Override
                 public void onFail(Throwable t) {
-                    LogTool.i(TAG, "response fail ");
+                    L.i(TAG, "response fail ");
                 }
             });
 

@@ -14,7 +14,7 @@ import com.lei.musicplayer.adapter.HomeListAdapter;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.database.DatabaseClient;
-import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.L;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,13 +48,13 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,
         //playlist
         playlist = DatabaseClient.getMusic();
         for (int i = 0; i < playlist.size(); i++) {
-            LogTool.i(TAG,"position: "+i+" musicId: "+playlist.get(i).getId());
+            L.i(TAG, "position: " + i + " musicId: " + playlist.get(i).getId());
         }
         playlistAdapter = new HomeListAdapter(getActivity(),playlist,R.layout.item_local_list);
         lvPlaylist.setAdapter(playlistAdapter);
         if (homeViews.size() > 0){
             homeViews.clear();
-            LogTool.i(TAG,"size: " + homeViews.size());
+            L.i(TAG, "size: " + homeViews.size());
         }
         homeViews.add(viewPlaylist);
         homeViews.add(viewCollection);
@@ -73,7 +73,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,
         }
         String[] titles = {getResources().getString(R.string.home_playlist), getResources().getString(R.string.home_collection)};
         for (int i = 0; i < titles.length; i++) {
-            LogTool.i(TAG,"titles: " + titles[i]);
+            L.i(TAG, "titles: " + titles[i]);
             tbHome.addTab(tbHome.newTab().setText(titles[i]));
         }
 
@@ -139,7 +139,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,
 
     @Override
     public void onResume() {
-        LogTool.i(TAG,"onResume");
+        L.i(TAG, "onResume");
         super.onResume();
     }
 

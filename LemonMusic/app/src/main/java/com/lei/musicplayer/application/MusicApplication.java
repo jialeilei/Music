@@ -2,6 +2,8 @@ package com.lei.musicplayer.application;
 
 
 import android.app.Application;
+import android.content.Context;
+
 import com.lei.musicplayer.database.DatabaseClient;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.util.ToastTool;
@@ -21,5 +23,9 @@ public class MusicApplication extends Application {
         DatabaseClient.init(this);
         ToastTool.init(this);
 
+    }
+
+    public static Context getContext(){
+        return getContext();
     }
 }

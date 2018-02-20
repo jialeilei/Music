@@ -1,9 +1,9 @@
 package com.lei.musicplayer.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.View;
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.bean.Music;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class HomeListAdapter extends CommonAdapter<Music> {
 
-    private static final String TAG = "HomeListAdapter";
+    private static final String TAG = HomeListAdapter.class.getSimpleName();
 
     public HomeListAdapter(Context context, List<Music> data, int mItemLayout) {
         super(context, data, mItemLayout);
@@ -33,13 +33,10 @@ public class HomeListAdapter extends CommonAdapter<Music> {
         viewHolder.setText(R.id.tv_title, item.getTitle());
         viewHolder.setText(R.id.tv_artist, item.getArtist());
         viewHolder.setText(R.id.tv_duration, String.valueOf(Util.formatTime(item.getDuration())));
-        if (AppCache.getLocalMusicList().get(position).getAlbumArt().length() > 0){
-            Bitmap bp = BitmapFactory.decodeFile(
-                    AppCache.getLocalMusicList().get(position).getAlbumArt());
-            viewHolder.setImageBitmap(R.id.img_music,bp);
-        }else {
-            viewHolder.setImageResource(R.id.img_music,R.mipmap.default_music);
-        }
+        Glide.with(mContext)
+                .load(item.getAlbumArt())
+                .placeholder(R.mipmap.default_music)
+                .into((ImageView) viewHolder.getView(R.id.img_music));
 
         if (AppCache.getPlayingMusic().getId() == item.getId()){
             viewHolder.getView(R.id.tv_playing).setVisibility(View.VISIBLE);

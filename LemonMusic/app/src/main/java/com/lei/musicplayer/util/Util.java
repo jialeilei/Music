@@ -1,13 +1,17 @@
 package com.lei.musicplayer.util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.lei.musicplayer.application.AppCache;
+import com.lei.musicplayer.application.MusicApplication;
 import com.lei.musicplayer.bean.LrcContent;
 import com.lei.musicplayer.bean.Music;
 import com.lei.musicplayer.bean.OnlineMusic;
@@ -226,7 +230,11 @@ public class Util {
                     fos.close();
                     bis.close();
                     is.close();
+
+                    scanFile(mContext,PARENT_PATH + fileName);
+
                     updateMedia(PARENT_PATH, callBack);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -269,12 +277,28 @@ public class Util {
                 new String[]{filename}, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
+                        // path: /storage/emulated/0/MusicPlayer/music
+                        // uri: content://media/external/file/190348
+                        Log.i("Util","path: " + path + " uri: " + uri);
                         if (callBack != null){
                             callBack.onMusicSuccess();
                         }
                     }
                 });
     }
+
+    /**
+     * 通知媒体库更新文件
+     * @param context
+     * @param filePath 文件全路径
+     *
+     * */
+    public static void scanFile(Context context, String filePath) {
+        Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        scanIntent.setData(Uri.fromFile(new File(filePath)));
+        context.sendBroadcast(scanIntent);
+    }
+
 
     public static Music onLineMusic2Music(OnlineMusic mOnlineMusic,String file_link,int duration) {
         Music info = onLineMusicToMusic(mOnlineMusic);

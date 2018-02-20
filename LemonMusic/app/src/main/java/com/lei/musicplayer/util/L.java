@@ -6,7 +6,7 @@ import com.lei.musicplayer.BuildConfig;
 /**
  * Created by lei on 2017/8/12.
  */
-public class LogTool {
+public class L {
 
     private static String className;
 

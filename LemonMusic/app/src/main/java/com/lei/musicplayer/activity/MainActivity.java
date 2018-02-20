@@ -34,7 +34,7 @@ public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener ,ViewPager.OnPageChangeListener,
         SeekBar.OnSeekBarChangeListener,View.OnClickListener,OnPlayMusicListener {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
     DrawerLayout drawer;
     NavigationView navigationView;
     private int play_progress = 0;

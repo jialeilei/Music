@@ -22,7 +22,7 @@ import com.lei.musicplayer.http.DownloadCallBack;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.http.GetCallBack;
 import com.lei.musicplayer.service.ScanCallBack;
-import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.L;
 import com.lei.musicplayer.util.ToastTool;
 import com.lei.musicplayer.util.Util;
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class RankAdapter extends BaseAdapter {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogTool.i(TAG, " position: " + position + " " + list.get(position).toString());
+                L.i(TAG, " position: " + position + " " + list.get(position).toString());
                 // TODO: 2017/9/22 进一步获取file_link、duration
                 if (position == 0 && list.get(position).getTitle().equals("native")) {
                     return;
@@ -151,7 +151,7 @@ public class RankAdapter extends BaseAdapter {
 
             @Override
             public void onFail(Throwable t) {
-                LogTool.i(TAG, " getMusicLink failed ");
+                L.i(TAG, " getMusicLink failed ");
             }
         });
     }
@@ -169,7 +169,7 @@ public class RankAdapter extends BaseAdapter {
 
                 @Override
                 public void onFail(Throwable t) {
-                    LogTool.i(TAG,"onFail");
+                    L.i(TAG, "onFail");
                 }
             });
         }else {
@@ -192,6 +192,7 @@ public class RankAdapter extends BaseAdapter {
         HttpClient.download(music, new DownloadCallBack() {
             @Override
             public void onMusicSuccess() {
+                L.i("更新媒体库完成，开始扫描");
                 scanMusic();
             }
 
@@ -215,7 +216,7 @@ public class RankAdapter extends BaseAdapter {
 
             @Override
             public void onFinish() {
-                LogTool.i(TAG, "下载并且媒体播放器扫描完成 AppCache.getLocalMusicList().size(): "
+                L.i(TAG, "下载并且媒体播放器扫描完成 AppCache.getLocalMusicList().size(): "
                         + AppCache.getLocalMusicList().size());
             }
         });

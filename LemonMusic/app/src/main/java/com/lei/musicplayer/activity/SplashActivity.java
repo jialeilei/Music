@@ -10,7 +10,7 @@ import com.lei.musicplayer.R;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.service.PlayerService;
 import com.lei.musicplayer.service.ScanCallBack;
-import com.lei.musicplayer.util.LogTool;
+import com.lei.musicplayer.util.L;
 
 
 public class SplashActivity extends BaseActivity {
@@ -65,12 +65,12 @@ public class SplashActivity extends BaseActivity {
             playerService.scanLocalMusic(new ScanCallBack() {
                 @Override
                 public void onFail(String msg) {
-                    LogTool.i(TAG,"scanLocalMusic onFail " + msg );
+                    L.i(TAG, "scanLocalMusic onFail " + msg);
                 }
 
                 @Override
                 public void onFinish() {
-                    LogTool.i(TAG,"onSuccess " + AppCache.getLocalMusicList().size());
+                    L.i(TAG, "onSuccess " + AppCache.getLocalMusicList().size());
                     startMainActivity();
                     finish();
                 }
@@ -80,7 +80,7 @@ public class SplashActivity extends BaseActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            LogTool.i(TAG,"onServiceDisconnected name: "+name);
+            L.i(TAG, "onServiceDisconnected name: " + name);
         }
     };
 
