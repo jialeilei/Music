@@ -7,7 +7,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import com.lei.musicplayer.R;
 import com.lei.musicplayer.adapter.ViewPagerAdapter;
@@ -22,7 +21,7 @@ import java.util.List;
 public class HomeFragment extends BaseFragment implements View.OnClickListener,
         ViewPager.OnPageChangeListener,TabLayout.OnTabSelectedListener{
 
-    private static final String TAG = "HomeFragment";
+    private static final String TAG = HomeFragment.class.getSimpleName();
     private TabLayout tbHome;
     ViewPager homeViewPager;
     ViewPagerAdapter pagerAdapter;
@@ -141,7 +140,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,
 
     @Override
     public void onResume() {
-        L.i(TAG, "onResume");
         super.onResume();
     }
 
@@ -149,4 +147,5 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener,
     public void onDestroy() {
         super.onDestroy();
     }
+
 }

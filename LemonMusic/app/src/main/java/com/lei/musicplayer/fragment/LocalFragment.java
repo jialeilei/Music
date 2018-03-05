@@ -1,7 +1,9 @@
 package com.lei.musicplayer.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,8 @@ import com.lei.musicplayer.util.L;
 /**
  * Created by lei on 2017/8/25.
  */
-public class LocalFragment extends BaseFragment implements AdapterView.OnItemClickListener{
+public class LocalFragment extends BaseFragment
+        implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener{
 
     private static final String TAG = LocalFragment.class.getSimpleName();
     private LocalListAdapter adapter;
@@ -42,9 +45,35 @@ public class LocalFragment extends BaseFragment implements AdapterView.OnItemCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        getPlayerService().play(AppCache.getLocalMusicList(),position);
+        getPlayerService().play(AppCache.getLocalMusicList(), position);
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        deleteDialog(position);
+        return false;
+    }
+
+    private void deleteDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("删除")
+                .setMessage("是否删除 " + AppCache.getLocalMusicList().get(position) + " ?")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                        dialog.dismiss();
+                    }
+                }).create();
+        builder.show();
+    }
 
     @Override
     protected void refreshListView() {
