@@ -16,6 +16,7 @@ import com.lei.musicplayer.constant.MusicType;
 import com.lei.musicplayer.http.DownloadCallBack;
 import com.lei.musicplayer.http.HttpClient;
 import com.lei.musicplayer.http.GetCallBack;
+import com.lei.musicplayer.persenter.SearchPresenter;
 import com.lei.musicplayer.util.ToastTool;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
  * Created by lei on 2017/9/11
  */
 public class SearchActivity extends BaseActivity implements
-        AdapterView.OnItemClickListener,View.OnClickListener,ListView.OnItemLongClickListener{
+        AdapterView.OnItemClickListener,View.OnClickListener,ListView.OnItemLongClickListener,SearchPresenter.Callback{
 
     private static final String TAG = SearchActivity.class.getSimpleName();
 
@@ -34,6 +35,7 @@ public class SearchActivity extends BaseActivity implements
     private SearchMusicAdapter adapter;
     private List<SearchMusic.Song> mSongList = new ArrayList<>();
 
+    private SearchPresenter mSearchPresenter;
 
     @Override
     protected int getLayoutId() {
@@ -42,6 +44,7 @@ public class SearchActivity extends BaseActivity implements
 
     @Override
     protected void initView() {
+        mSearchPresenter = new SearchPresenter(this,this);
         imgBack = (ImageButton) findViewById(R.id.img_btn_back);
         imgBack.setOnClickListener(this);
         imgSearch = (ImageButton) findViewById(R.id.img_btn_search);
@@ -68,7 +71,7 @@ public class SearchActivity extends BaseActivity implements
             case R.id.img_btn_search:
                 String keyword = etSearch.getText().toString();
                 if (keyword != null && keyword.length() > 0){
-                    toSearchMusic(keyword);
+                    mSearchPresenter.searchMusic(keyword);
                 }else {
                     ToastTool.ToastShort("search content is null");
                 }
@@ -79,29 +82,8 @@ public class SearchActivity extends BaseActivity implements
         }
     }
 
-    private void toSearchMusic(String keyword) {
-        HttpClient.getSearchMusic(keyword, new GetCallBack<SearchMusic>() {
-            @Override
-            public void onSuccess(SearchMusic response) {
-                if (response.getSong() != null && response.getSong().size() > 0) {
-                    mSongList = response.getSong();
-                    adapter = new SearchMusicAdapter(SearchActivity.this, mSongList,
-                            R.layout.item_search_list);
-                    listView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-                } else {
-                    ToastTool.ToastLong("没有搜索到歌曲");
-                }
-            }
-
-            @Override
-            public void onFail(Throwable t) {
-                ToastTool.ToastLong("搜索失败，请检查网络");
-            }
-        });
-    }
-
     private Music mMusic = new Music();
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         playMusic(position);
@@ -199,6 +181,18 @@ public class SearchActivity extends BaseActivity implements
                     }
                 }).create();
         builder.show();
+    }
+
+    @Override
+    public void searchMusicSuccess(List<SearchMusic.Song> songList) {
+        adapter = new SearchMusicAdapter(SearchActivity.this, songList, R.layout.item_search_list);
+        listView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void searchMusicFail(String str) {
+        ToastTool.ToastLong(str);
     }
 
 
