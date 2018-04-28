@@ -14,7 +14,7 @@ import com.lei.musicplayer.util.L;
 
 public class SplashActivity extends BaseActivity {
 
-    private static final String TAG = "SplashActivity";
+    private static final String TAG = SplashActivity.class.getSimpleName();
 
     @Override
     protected int getLayoutId() {
@@ -61,7 +61,7 @@ public class SplashActivity extends BaseActivity {
     public class PlayerServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            PlayerService playerService = ((PlayerService.PlayerBinder) service).getService();
+            PlayerService playerService = (PlayerService) ((PlayerService.PlayerBinder) service).getService();
             AppCache.setPlayService(playerService);
 
             playerService.scanLocalMusic(new ScanCallBack() {

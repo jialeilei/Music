@@ -172,10 +172,10 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener,
                 getPlayerService().playOrStop();
                 break;
             case R.id.fg_bottom_next:
-                getPlayerService().playNext();
+                getPlayerService().onPlayNext();
                 break;
             case R.id.fg_bottom_prev:
-                getPlayerService().playPrev();
+                getPlayerService().onPlayPrev();
                 break;
             default:
                 break;

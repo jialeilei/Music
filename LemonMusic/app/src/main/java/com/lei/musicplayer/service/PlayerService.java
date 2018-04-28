@@ -19,7 +19,7 @@ import java.util.List;
  * Created by lei on 2017/8/3.
  * play music
  */
-public class PlayerService extends Service {
+public class PlayerService extends Service implements IPlayerService{
     private static final String TAG = "PlayerService";
     private MediaPlayer mediaPlayer = new MediaPlayer();
     //private String path;
@@ -62,10 +62,10 @@ public class PlayerService extends Service {
                     seekBarPlay(intent.getIntExtra(AppConstant.MSG_PROGRESS,0));
                     break;
                 case AppConstant.ACTION__NEXT :
-                    playNext();
+                    onPlayNext();
                     break;
                 case AppConstant.ACTION__PREVIOUS :
-                    playPrev();
+                    onPlayPrev();
                     break;
                 default:
                     break;
@@ -79,18 +79,14 @@ public class PlayerService extends Service {
         if (mediaPlayer.isPlaying()){//暂停
             stop();
         }else {//继续上次位置播放
-            play();
+            onPlay();
         }
     }
 
     public void seekBarPlay(int progress) {//调节进度播放
         stop();
         play_progress = progress;
-        play();
-    }
-
-    public void play(){
-        play(musicList.get(play_position));
+        onPlay();
     }
 
     /*
@@ -145,33 +141,19 @@ public class PlayerService extends Service {
         }
     }
 
-    public void playPrev() {
-        play_progress = 0;
-        if (play_position == 0){
-            play_position = musicList.size() - 1;
-        }else {
-            play_position --;
-        }
-        play();
+
+    private void stopHandlerLoop() {
+        handler.removeMessages(1);
     }
 
-    public void playNext() {
-        play_progress = 0;
-        if (play_position == musicList.size() - 1){
-            play_position = 0;
-        }else {
-            play_position ++;
-        }
-        play();
+
+    @Override
+    public void onPlay() {
+        play(musicList.get(play_position));
     }
 
-    private void pause() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()){
-            mediaPlayer.pause();
-        }
-    }
-
-    private void stop() {
+    @Override
+    public void stop() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()){
             mediaPlayer.stop();
             AppCache.setIsPlaying(false);
@@ -180,8 +162,27 @@ public class PlayerService extends Service {
         }
     }
 
-    private void stopHandlerLoop() {
-        handler.removeMessages(1);
+    @Override
+    public void onPlayNext() {
+        play_progress = 0;
+        if (play_position == musicList.size() - 1){
+            play_position = 0;
+        }else {
+            play_position ++;
+        }
+        onPlay();
+    }
+
+    @Override
+    public void onPlayPrev() {
+
+        play_progress = 0;
+        if (play_position == 0){
+            play_position = musicList.size() - 1;
+        }else {
+            play_position --;
+        }
+        onPlay();
     }
 
     private void complete(){
@@ -189,7 +190,7 @@ public class PlayerService extends Service {
             mediaPlayer.stop();
             mPlayerServiceListener.onMusicComplete();
             stopHandlerLoop();
-            playNext();
+            onPlayNext();
         }
     }
 
@@ -217,13 +218,12 @@ public class PlayerService extends Service {
         }
     }
 
-
     public void setOnPlayerListener(OnPlayMusicListener listener){
         mPlayerServiceListener = listener;
     }
 
     public class PlayerBinder extends android.os.Binder{
-        public PlayerService getService(){
+        public IPlayerService getService(){
             return PlayerService.this;
         }
     }

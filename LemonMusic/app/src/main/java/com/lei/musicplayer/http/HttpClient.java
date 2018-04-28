@@ -93,7 +93,6 @@ public class HttpClient extends HttpHelper{
     }
 
     public static void download(final Music music, final DownloadCallBack callBack){
-        ToastTool.ToastShort("开始下载");
         downloadMusic(music, callBack);
     }
 
@@ -104,7 +103,6 @@ public class HttpClient extends HttpHelper{
                 if (response.isSuccessful()) {
                     Util.writeMusicToDir(music, response.body().byteStream(), callBack);
                     downloadLrcStream(music);
-                    ToastTool.ToastShort("下载完成");
                 }
             }
 

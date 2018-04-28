@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -210,7 +209,7 @@ public class MainActivity extends BaseActivity
         switch (v.getId()){
             case R.id.img_next:
                 //sendPlayInfo(AppConstant.ACTION__NEXT, false);
-                getPlayService().playNext();
+                getPlayService().onPlayNext();
                 break;
             case R.id.img_play:
                 //sendPlayInfo(AppConstant.ACTION_PLAY_STOP,false);
