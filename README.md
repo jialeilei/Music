@@ -1,5 +1,7 @@
-# Music Player
-android端音乐播放器：   
-本地音乐  
-在线音乐  
-下载音乐
+##Music Player
+
+###function   
+
+####play local music  
+####play online music  
+####download music for free
