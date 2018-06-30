@@ -108,6 +108,29 @@ public class DatabaseClient {
         return list;
     }
 
+    public static void addCollect(Music music){
+
+    }
+
+    public static boolean checkCollect(Music music){
+        boolean result = false;
+
+
+        return result;
+    }
+
+    public static void deleteCollect(Music music){
+
+    }
+
+    public static List<Music> getCollect(){
+        List<Music> list = new ArrayList<>();
+
+
+
+        return list;
+    }
+
     public void deletePerson(String id) {
         db = database.getWritableDatabase();
         db.execSQL("delete from " + TABLE_PLAY_LIST + " where " + MUSIC_ID + "=? ", new Object[]

@@ -1,9 +1,6 @@
 package com.lei.musicplayer.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -117,17 +114,6 @@ public class MainActivity extends BaseActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void setReceiver() {
-        mainReceiver = new MainReceiver();
-        // 创建IntentFilter
-        IntentFilter filter = new IntentFilter();
-        // 指定BroadcastReceiver监听的Action
-        filter.addAction(AppConstant.ACTION_STATE);
-        filter.addAction(AppConstant.ACTION_PROGRESS);
-        // 注册BroadcastReceiver
-        registerReceiver(mainReceiver, filter);
-
-    }
 
 
     @Override
@@ -181,28 +167,9 @@ public class MainActivity extends BaseActivity
                 tvLocal.setTextColor(getResources().getColor(R.color.gray_e));
                 tvOnline.setTextColor(getResources().getColor(R.color.white));
                 tvHome.setTextColor(getResources().getColor(R.color.gray_e));
-
                 break;
         }
-
     }
-
-    private MainReceiver mainReceiver;
-
-    public class MainReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()){
-                case AppConstant.ACTION_STATE:
-
-                    break;
-                case AppConstant.ACTION_PROGRESS:
-
-                    break;
-            }
-        }
-    }
-
 
     @Override
     public void onClick(View v) {

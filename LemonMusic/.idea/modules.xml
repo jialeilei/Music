@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LemonMusic.iml" filepath="$PROJECT_DIR$/LemonMusic.iml" />
-      <module fileurl="file://D:\project\Music\LemonMusic\LemonMusic.iml" filepath="D:\project\Music\LemonMusic\LemonMusic.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://D:\project\Music\LemonMusic\app\app.iml" filepath="D:\project\Music\LemonMusic\app\app.iml" />
     </modules>
   </component>
 </project>
