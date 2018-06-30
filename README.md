@@ -4,8 +4,8 @@
 在线音乐  
 下载音乐  
 
-##部分截图
-![Home](https://github.com/jialeilei/Music/tree/master/LemonMusic/img/home.jpg)
-![Home](https://github.com/jialeilei/Music/tree/master/LemonMusic/img/online.jpg)  
-![Home](https://github.com/jialeilei/Music/tree/master/LemonMusic/img/play.jpg)
-![Home](https://github.com/jialeilei/Music/tree/master/LemonMusic/img/search.jpg)
+##部分截图    
+![Home](https://github.com/jialeilei/Music/raw/master/img/home.jpg) <br>  
+![Onine](https://github.com/jialeilei/Music/raw/master/img/online.jpg) <br>  
+![Play](https://github.com/jialeilei/Music/raw/master/img/play.jpg) <br>
+![Search](https://github.com/jialeilei/Music/raw/master/img/search.jpg)<br>
