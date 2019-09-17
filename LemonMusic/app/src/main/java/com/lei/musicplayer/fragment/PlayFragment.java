@@ -19,6 +19,7 @@ import com.lei.musicplayer.util.Util;
 import com.lei.musicplayer.view.LrcView;
 import java.util.List;
 
+
 public class PlayFragment extends BaseFragment implements View.OnClickListener,
         View.OnTouchListener,SeekBar.OnSeekBarChangeListener{
 

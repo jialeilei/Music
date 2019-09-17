@@ -36,6 +36,7 @@ import java.util.List;
  */
 public class Util {
 
+    private static final String TAG = Util.class.getSimpleName();
     private static Context mContext;
     //储存路径
     private static final String BASIC_PATH = Environment.getExternalStorageDirectory() + "/MusicPlayer/";
@@ -47,6 +48,9 @@ public class Util {
 
     public static void init(Context context){
         mContext = context;
+        if (mContext == null){
+            Log.i(TAG,"init()  context is null 4 ");
+        }
     }
     /**
      * 格式化时间，将毫秒转换为分:秒格式
@@ -105,10 +109,12 @@ public class Util {
 
     public static List<Music> getLocalMusic(){
         List<Music> infos = new ArrayList<Music>();
-        Cursor cursor = mContext.getContentResolver().query(
+        Cursor cursor = null;
+        /*Cursor cursor = mContext.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,
-                MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+                MediaStore.Audio.Media.DEFAULT_SORT_ORDER);*/
 
+        if (cursor == null) return null;
         for (int i = 0; i < cursor.getCount(); i++) {
             cursor.moveToNext();
             long duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
@@ -155,6 +161,8 @@ public class Util {
         if (cursor1 != null) {
             cursor1.moveToFirst();
             do {
+                if (cursor1.getCount() <= 0)
+                    return null;
                 String album_art =  cursor1.getString(0);
                 String album =  cursor1.getString(1);
                 String albumKey = cursor1.getString(2);
@@ -213,6 +221,9 @@ public class Util {
     * 将数据储存到SD卡
     * */
     private static void writeToDir(final String fileName ,final InputStream is, final DownloadCallBack callBack) {
+        if (mContext == null){
+            Log.i(TAG," context is null 3 ");
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -231,6 +242,9 @@ public class Util {
                     bis.close();
                     is.close();
 
+                    if (mContext == null){
+                        Log.i(TAG," context is null 2 ");
+                    }
                     scanFile(mContext,PARENT_PATH + fileName);
 
                     updateMedia(PARENT_PATH, callBack);
@@ -296,6 +310,9 @@ public class Util {
     public static void scanFile(Context context, String filePath) {
         Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         scanIntent.setData(Uri.fromFile(new File(filePath)));
+        if (context == null){
+            Log.i(TAG,"content is null  1");
+        }
         context.sendBroadcast(scanIntent);
     }
 

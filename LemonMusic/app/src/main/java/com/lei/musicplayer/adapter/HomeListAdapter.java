@@ -2,6 +2,7 @@ package com.lei.musicplayer.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,9 +20,10 @@ import java.util.List;
 public class HomeListAdapter extends CommonAdapter<Music> {
 
     private static final String TAG = HomeListAdapter.class.getSimpleName();
-
+    Handler h;
     public HomeListAdapter(Context context, List<Music> data, int mItemLayout) {
         super(context, data, mItemLayout);
+        if (h == null) h = new Handler(context.getMainLooper());
     }
 
     public void refreshData(){
@@ -32,6 +34,7 @@ public class HomeListAdapter extends CommonAdapter<Music> {
     @Override
     public void convert(ViewHolder viewHolder, final Music item, final int position) {
 
+        if (item == null )return;
         viewHolder.setText(R.id.tv_title, item.getTitle());
         viewHolder.setText(R.id.tv_artist, item.getArtist());
         viewHolder.setText(R.id.tv_duration, String.valueOf(Util.formatTime(item.getDuration())));
@@ -40,7 +43,7 @@ public class HomeListAdapter extends CommonAdapter<Music> {
                 .placeholder(R.mipmap.default_music)
                 .into((ImageView) viewHolder.getView(R.id.img_music));
 
-        if (AppCache.getPlayingMusic().getId() == item.getId()){
+        if (AppCache.getPlayingMusic() != null && AppCache.getPlayingMusic().getId() == item.getId()){
             viewHolder.getView(R.id.tv_playing).setVisibility(View.VISIBLE);
         }else {
             viewHolder.getView(R.id.tv_playing).setVisibility(View.INVISIBLE);
@@ -49,7 +52,13 @@ public class HomeListAdapter extends CommonAdapter<Music> {
         viewHolder.getConvertView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppCache.getPlayService().play(mData,position);
+                h.removeCallbacksAndMessages(null);
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppCache.getPlayService().play(mData, position);
+                    }
+                },50);
             }
         });
 

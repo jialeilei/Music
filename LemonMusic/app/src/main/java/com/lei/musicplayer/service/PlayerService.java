@@ -165,6 +165,9 @@ public class PlayerService extends Service implements IPlayerService{
     @Override
     public void onPlayNext() {
         play_progress = 0;
+        if (musicList == null){
+            musicList = Util.getLocalMusic();
+        }
         if (play_position == musicList.size() - 1){
             play_position = 0;
         }else {

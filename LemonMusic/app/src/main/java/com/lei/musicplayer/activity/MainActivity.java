@@ -26,6 +26,7 @@ import com.lei.musicplayer.service.PlayerService;
 import com.lei.musicplayer.service.OnPlayMusicListener;
 import com.lei.musicplayer.util.Util;
 
+
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener ,ViewPager.OnPageChangeListener,
         SeekBar.OnSeekBarChangeListener,View.OnClickListener,OnPlayMusicListener {
@@ -96,6 +97,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void setBottomMusicInfo() {
+        if (AppCache.getPlayingMusic() == null)return;
         tvMusicName.setText(AppCache.getPlayingMusic().getTitle());
         tvMusicAuthor.setText(AppCache.getPlayingMusic().getArtist());
         String imgPath = AppCache.getPlayingMusic().getAlbumArt();
@@ -358,4 +360,5 @@ public class MainActivity extends BaseActivity
         //drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

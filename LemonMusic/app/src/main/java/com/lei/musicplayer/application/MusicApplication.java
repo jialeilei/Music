@@ -22,10 +22,7 @@ public class MusicApplication extends Application {
         Util.init(this);
         DatabaseClient.init(this);
         ToastTool.init(this);
-
     }
 
-    public static Context getContext(){
-        return getContext();
-    }
+
 }

@@ -77,6 +77,7 @@ public class DatabaseClient {
 
     public static List<Music> getMusic(){
         List<Music> list = new ArrayList<>();
+        if (database == null)return list;
         db = database.getReadableDatabase();
         //Cursor cursor = db.rawQuery("select * from playlist ",null);
         Cursor cursor = db.query(TABLE_PLAY_LIST, null, null, null, null, null, null, null);

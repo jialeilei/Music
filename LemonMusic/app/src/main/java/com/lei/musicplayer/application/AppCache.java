@@ -79,7 +79,7 @@ public class AppCache {
     }
 
     public static Music getPlayingMusic(){
-        if (mPlayingMusic == null){
+        if (mPlayingMusic == null && getInstance().localMusicList.size() > 0){
             mPlayingMusic = getInstance().localMusicList.get(0);
         }
         return mPlayingMusic;

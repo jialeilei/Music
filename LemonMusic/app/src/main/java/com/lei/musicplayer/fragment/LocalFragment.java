@@ -14,7 +14,6 @@ import com.lei.musicplayer.adapter.LocalListAdapter;
 import com.lei.musicplayer.application.AppCache;
 import com.lei.musicplayer.util.L;
 
-
 /**
  * Created by lei on 2017/8/25.
  */

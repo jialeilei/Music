@@ -2,35 +2,35 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lei.musicplayer">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- android:name=".application.MusicApplication" -->
     <application
-        android:name=".application.MusicApplication"
+        android:enabled="true"
         android:allowBackup="false"
         android:icon="@mipmap/icon_music"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-
         <service android:name=".service.PlayerService" />
 
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"></activity>
-
-        <activity android:name=".activity.SearchActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SearchActivity"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>
